@@ -1,0 +1,64 @@
+1) Conclusion and Future Scope
+
+The focus of this research was to create a modular, AI-based Career Guidance System that uses machine learning (ML), provides scholarship recommendations and develops career roadmaps to assist students in making personalized and educated decisions about their future careers. The performance of the Career Guidance System is based on a unique dataset curated by the author, which provided a high level of predictive accuracy, interpretable recommendations about careers, and real-world application capability in actual educational settings.
+
+The Career Guidance System aims to resolve some of the significant shortcomings of traditional career counseling by providing scalable, data-driven guidance to assist individual students based on their unique needs. Future research will seek to add psychometric assessment, real-time labor market data and dynamic academic progress to the Career Guidance System’s database to enhance the accuracy of the system’s predictions, improve scholarship recommendations and create a direct path for an individual student’s future career, thereby supporting more informed and independent decision-making for students.
+
+
+2) Discussion
+
+The outcomes of the research indicate that our AI-driven career assistance program accurately identifies the relationships between the academic performance of the student, the skill sets of the student, the abilities of the student and the appropriate careers for the student.
+
+The misclassifications of career domains primarily occurred between those in close association with each other, indicating that many career paths have multiple associated careers that are both complex and intertwined. However, the design of the system indicates that it maximizes both transparency and fairness by providing interpretable recommendations rather than simply deterministic outputs.
+
+Due to its modular and scalable design structure, the AI-driven Career Guidance System can be deployed throughout many different grades, thus providing more comprehensive support to students and children than traditional career assistance programs, which are usually based on a "one size fits all" model.
+
+Finally, in addition to providing scholarship recommendations and prescriptive career roadmaps, the AI Driven Career Assistance System provides students and/or children with a wide variety of additional actionable resources (outside of simple employment identification).
+
+3)Explainability and Decision Support Value
+
+With the Feature Importance analysis of the Random Forest Model we can see the most impactful academic, skill based and aptitude features used for predictions which allows for low impact explanatory capabilities for users. The Random Forest model has a good balance of accurate predictive performance with clarifying interpretability while also maintaining the ability to be scalable. This makes the Random Forest model appropriate for the majority of real-life career guidance applications compared to algorithms such as GBM and XGBoost where they may perform better in a specific circumstance with respect to prediction accuracy.
+
+The additional modules of scholarship recommendation and roadmap generation take advantage of the predictive output of the Random Forest model to provide students with recommendations for available funding sources, and structured action steps (skills, academic milestones, preparation for college) related to their predicted careers so as to add to the effectiveness of the system beyond only predicting their future careers.
+
+4) Implemented Model and Evaluation
+
+Using a Random Forest classifier on a dataset of 120 student's data from five educational levels, the authors created a predictive model of student success using multiple data types. Data types included academic performance, skill level, aptitude indicators, interest area, and socio-economic attributes relevant to student scholarships.
+
+Split 80% of the data into training and the remaining 20% as a test set to assess the predictive power of the model on data not used during training. The process used a Random Forest to model relationships between the student's academic, skill, and aptitude features with potential career areas. The Random Forest model achieved 90% overall accuracy on the test set when predicting future use of the data for other students. The majority of the misclassified records existed within very similar occupational fields and thus had the traditional overlap that exists between career fields in real life.
+
+Finally, a comparison of predictive ability against baseline methods demonstrated that Random Forest methodology provided superior predictive ability than either a rule-based method or a single tree classification method.
+
+Results and Analysis
+
+The proposed AI-driven career guidance system was evaluated conceptually using multiple supervised learning algorithms frequently applied in educational data mining, including Decision Trees, Random Forests, Gradient Boosting Machines (GBMs), XGBoost, LightGBM, CatBoost, and Deep Neural Networks (DNNs). These supervised learning algorithms have demonstrated their capability to achieve successful prediction accuracy and high predictive capability on structural student data when provided with enough features to represent them. In particular, ensemble methods based on boosting should be well suited for tasks of career guidance, because they provide good performance when dealing with heterogeneous types of data and allow feature importance to be calculated for explanation purposes.
+
+5) Implementation and Methodology
+
+The Career Guidance System has been designed with modular architecture. By using Python and widely used machine learning libraries, the system ensures flexibility, scalability, and reproducibility of the Career Guidance System. The Career Guidance System has been developed according to five main phases: (1) data collection; (2) data preprocessing; (3) training the career prediction model; (4) generating predictions of student careers based on data collected; and (5) developing actionable recommendations based on the career predictions developed in the previous step.
+
+The data used to develop the Career Guidance System was collected from students through structured surveys and academic records. Data collected included academic achievement, skills, areas of interest, indicators of potential, and socio-economic factors related to eligibility for scholarships. Each student’s data were anonymized to protect individual privacy and meet ethical obligations.
+
+Data preprocessing included dealing with missing values; normalizing quantitative values; and encoding qualitative values in a format required for supervised learning. These steps will ensure consistency of data and improve predictive performance.
+
+Different supervised learning methods (e.g., Logistic Regression, Random Forest, etc.) were evaluated; the Random Forest method was selected due to its
+ability to provide accurate predictions and robustness with mixed data types, and is less susceptible to overfitting than many other methods. Both training and testing of the model were conducted using an 80/20 Training/Test Split; therefore generalization of results can be evaluated.
+
+In addition to recommending scholarships, the Career Guidance System is designed to generate a roadmap of the skills needed, academic requirements, and preparatory steps to enhance the probability of students obtaining the recommended careers as predicted by the Career Guidance System.
+
+Feature importance analysis was done to produce a description of the most impactful academic, skills based and aptitude features that contributed to the outcome or recommendation for each student. Each recommendation also comes with a human-readable translation, created by the language module, which enables the student to see why they received their outcome or recommendation in a manner in which they can utilize to make an informed decision.
+
+6) Algorithm Steps
+
+The proposed system creates career guidance, scholarship guidance, and road maps in the following manner:
+
+
+ 1. Collect a student profile that contains academic achievement data (including scores), skill level proficiency, ability indicators, socio-economic characteristics, and interest areas across various educational levels. 
+ 2. Process the collected data by (1) refining any missing data and (2) standardizing all numerical fields and encoding each of the categorical variables as numerical values (for machine learning).
+ 3. Split the data that was prepared in step 2 into training dataset and test datasets to objectively measure the performance of the machine learning models. 
+ 4. Train a Random Forest Classifier using labeled student profiles as the training data. Each decision tree is created from a random sample of the data and random selection of the features to create model diversity and generalization (random forest). 
+ 5. Create predictions for new student profiles using the predicted career domains created from predicting using Dense Arrays through Averaging (each tree's output value will be averaged) from the decision trees created and trained using the training dataset. 
+ 6. Evaluate the importance of the features based upon the trained Random Forest model to identify the academic, skill-based, aptitude, and socio-economic factors that have the greatest degree of influence on the creation of the predictions. 
+ 7. Create the final recommendations for students, based upon their predicted career domain and descriptions of how they will be supported; in addition, each student will receive recommendations for scholarships found in the second module and a structured roadmap with information about the skills needed, the academic milestones to achieve them, and the steps to prepare them for their chosen career.
+
+The Random Forest algorithm is selected because it can work well with structured data, can handle a wide variety of different types of features, and has good predictive accuracy. It also provides measure of feature importance, allowing users to understand how each feature contributes to the prediction process, thereby enabling transparency and improving the user's ability to make an informed decision based on the prediction.

@@ -1,0 +1,3700 @@
+// import { useState, useEffect, useRef } from "react";
+
+// // ─────────────────────────────────────────────────────────
+// // PROPS this component expects (pass from your parent):
+// //
+// //   <CareerResult
+// //     student={student}       // { name, edu, stream, score, ... }
+// //     matchData={matchData}   // from your ML API
+// //     roadmap={roadmap}       // from your Claude API
+// //     onRestart={() => {}}    // callback to go back to form
+// //   />
+// //
+// // DEMO MODE: if you don't pass props, it uses built-in demo data
+// // ─────────────────────────────────────────────────────────
+
+// const DEMO_STUDENT = {
+//   name: "Priya Sharma",
+//   edu: "12",
+//   stream: "Science (PCM)",
+//   score: 82,
+// };
+
+// const DEMO_MATCH = {
+//   predictions: [
+//     {
+//       career_cluster: "Software & Technology",
+//       confidence: 72.4,
+//       match_strength: "Excellent Match",
+//     },
+//     {
+//       career_cluster: "Data Science & AI",
+//       confidence: 51.2,
+//       match_strength: "Strong Match",
+//     },
+//     {
+//       career_cluster: "Engineering & Manufacturing",
+//       confidence: 31.8,
+//       match_strength: "Good Match",
+//     },
+//   ],
+//   key_factors: [
+//     { factor: "Interest in Technology", weight: 18.2 },
+//     { factor: "Coding Skills", weight: 14.5 },
+//     { factor: "Analytical Thinking", weight: 12.1 },
+//     { factor: "Academic Score", weight: 9.8 },
+//     { factor: "Engineering Stream", weight: 8.3 },
+//   ],
+//   similar_students_count: 248,
+// };
+
+// const DEMO_ROADMAP = {
+//   careerTitle: "Software & Technology",
+//   summary:
+//     "Based on your Science background and strong analytical profile, you're an excellent fit for software engineering. Your logical thinking and problem-solving instincts will accelerate your career trajectory significantly.",
+//   totalDuration: "18–24 months",
+//   difficulty: "Moderate",
+//   phases: [
+//     {
+//       title: "Core Foundations",
+//       duration: "Month 1–4",
+//       description:
+//         "Build an unshakeable base in programming fundamentals and computer science principles.",
+//       skills: [
+//         "Python / JavaScript",
+//         "Data Structures",
+//         "Algorithms",
+//         "Git & GitHub",
+//       ],
+//       resources: [
+//         { name: "CS50 by Harvard", platform: "edX", free: true },
+//         { name: "The Odin Project", platform: "Web", free: true },
+//         { name: "LeetCode Easy", platform: "LeetCode", free: true },
+//       ],
+//       milestones: ["Complete 50 coding problems", "Ship 2 solo projects"],
+//       projects: ["Portfolio website", "CLI to-do app"],
+//     },
+//     {
+//       title: "Specialize & Build",
+//       duration: "Month 5–10",
+//       description:
+//         "Go deep on a stack. Contribute to open source. Start building a body of work.",
+//       skills: ["React / Node.js", "SQL + NoSQL", "REST APIs", "Docker"],
+//       resources: [
+//         { name: "Full Stack Open", platform: "Univ. of Helsinki", free: true },
+//         { name: "MongoDB University", platform: "MongoDB", free: true },
+//         { name: "System Design Primer", platform: "GitHub", free: true },
+//       ],
+//       milestones: ["Launch 1 production app", "Merge 1 open-source PR"],
+//       projects: ["Full-stack e-commerce", "Open-source contribution"],
+//     },
+//     {
+//       title: "Real-World Experience",
+//       duration: "Month 11–16",
+//       description:
+//         "Internships, mentors, professional communication — the skills school never taught.",
+//       skills: [
+//         "Agile/Scrum",
+//         "Code Review",
+//         "Team Collaboration",
+//         "Technical Writing",
+//       ],
+//       resources: [
+//         { name: "Internshala", platform: "Internshala", free: true },
+//         { name: "LinkedIn Learning", platform: "LinkedIn", free: false },
+//       ],
+//       milestones: ["1 paid internship", "200+ LinkedIn network"],
+//       projects: ["Internship capstone", "2 tech blog posts"],
+//     },
+//     {
+//       title: "Interview & Land the Job",
+//       duration: "Month 17–24",
+//       description:
+//         "Systematic interview prep. System design mastery. Negotiate like a pro.",
+//       skills: [
+//         "System Design",
+//         "Behavioural Interviews",
+//         "DSA Advanced",
+//         "Salary Negotiation",
+//       ],
+//       resources: [
+//         {
+//           name: "Cracking the Coding Interview",
+//           platform: "Book",
+//           free: false,
+//         },
+//         { name: "Pramp — Mock Interviews", platform: "Pramp", free: true },
+//         { name: "Naukri / LinkedIn Jobs", platform: "Job Portal", free: true },
+//       ],
+//       milestones: ["200 LeetCode problems", "5+ offer letters"],
+//       projects: ["Capstone SaaS product", "System design video walkthrough"],
+//     },
+//   ],
+//   careerPaths: [
+//     {
+//       role: "Junior Software Engineer",
+//       salary: "₹4–8 LPA",
+//       companies: ["TCS", "Infosys", "Wipro", "Startups"],
+//       growth: "→ SE → Senior SE → Tech Lead",
+//     },
+//     {
+//       role: "Full Stack Developer",
+//       salary: "₹6–15 LPA",
+//       companies: ["Razorpay", "Zepto", "Zomato", "Startups"],
+//       growth: "→ Senior Dev → Eng Manager",
+//     },
+//     {
+//       role: "Product Engineer",
+//       salary: "₹12–25 LPA",
+//       companies: ["Flipkart", "Swiggy", "CRED", "Dream11"],
+//       growth: "→ Staff Eng → Principal Engineer",
+//     },
+//   ],
+//   exams: [
+//     { name: "GATE", forWhat: "M.Tech / PSU Jobs", difficulty: "Hard" },
+//     {
+//       name: "AMCAT / CoCubes",
+//       forWhat: "Campus placements (500+ companies)",
+//       difficulty: "Easy",
+//     },
+//     {
+//       name: "Google / MS Hiring",
+//       forWhat: "Big Tech Direct",
+//       difficulty: "Hard",
+//     },
+//   ],
+//   colleges: [
+//     {
+//       name: "IIT Bombay",
+//       loc: "Mumbai",
+//       prog: "M.Tech CSE",
+//       rank: "#1 in India",
+//     },
+//     {
+//       name: "BITS Pilani",
+//       loc: "Rajasthan",
+//       prog: "M.E. Software Systems",
+//       rank: "Top 10",
+//     },
+//     {
+//       name: "IIIT Hyderabad",
+//       loc: "Hyderabad",
+//       prog: "M.Tech CS",
+//       rank: "Top 5 for CS",
+//     },
+//   ],
+//   tips: [
+//     "Build in public from Day 1 — LinkedIn + GitHub + Twitter",
+//     "3 exceptional projects beat 20 mediocre ones every time",
+//     "Join coding communities: Discord, meetups, hackathons",
+//     "Communication is a career multiplier — invest in it",
+//     "Apply to 5× more jobs than you think you need to",
+//   ],
+//   mistakes: [
+//     "Tutorial hell — consuming without building anything real",
+//     "Waiting until 'ready' — rejections teach more than courses",
+//     "Skipping DSA — 90% of tech interviews test it directly",
+//   ],
+// };
+
+// // ─────────────────────────────────────────────────────────
+// // ANIMATED PROGRESS BAR
+// // ─────────────────────────────────────────────────────────
+// function AnimBar({ label, value, color, delay = 0, showLabel = true }) {
+//   const [width, setWidth] = useState(0);
+//   useEffect(() => {
+//     const t = setTimeout(() => setWidth(value), 120 + delay);
+//     return () => clearTimeout(t);
+//   }, [value, delay]);
+
+//   return (
+//     <div style={{ marginBottom: 13 }}>
+//       {showLabel && (
+//         <div
+//           style={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             marginBottom: 5,
+//           }}
+//         >
+//           <span
+//             style={{ fontSize: 12, color: "#8b9cb5", letterSpacing: ".01em" }}
+//           >
+//             {label}
+//           </span>
+//           <span
+//             style={{
+//               fontSize: 11,
+//               color,
+//               fontFamily: "monospace",
+//               fontWeight: 700,
+//             }}
+//           >
+//             {value.toFixed(1)}%
+//           </span>
+//         </div>
+//       )}
+//       <div
+//         style={{
+//           height: 6,
+//           borderRadius: 99,
+//           background: "rgba(255,255,255,.06)",
+//           overflow: "hidden",
+//           position: "relative",
+//         }}
+//       >
+//         <div
+//           style={{
+//             height: "100%",
+//             width: `${width}%`,
+//             borderRadius: 99,
+//             background: `linear-gradient(90deg, ${color}, ${color}aa)`,
+//             boxShadow: `0 0 10px ${color}55`,
+//             transition: "width 1.3s cubic-bezier(0.16, 1, 0.3, 1)",
+//           }}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ─────────────────────────────────────────────────────────
+// // CONFIDENCE RING (SVG donut)
+// // ─────────────────────────────────────────────────────────
+// function ConfidenceRing({ value, color, size = 90 }) {
+//   const [v, setV] = useState(0);
+//   useEffect(() => {
+//     const t = setTimeout(() => setV(value), 300);
+//     return () => clearTimeout(t);
+//   }, [value]);
+//   const r = 38,
+//     circ = 2 * Math.PI * r;
+//   const dash = circ - (v / 100) * circ;
+//   return (
+//     <div
+//       style={{ position: "relative", width: size, height: size, flexShrink: 0 }}
+//     >
+//       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+//         <circle
+//           cx={size / 2}
+//           cy={size / 2}
+//           r={r}
+//           fill="none"
+//           stroke="rgba(255,255,255,.06)"
+//           strokeWidth="6"
+//         />
+//         <circle
+//           cx={size / 2}
+//           cy={size / 2}
+//           r={r}
+//           fill="none"
+//           stroke={color}
+//           strokeWidth="6"
+//           strokeDasharray={circ}
+//           strokeDashoffset={dash}
+//           strokeLinecap="round"
+//           style={{
+//             transition: "stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1)",
+//             filter: `drop-shadow(0 0 6px ${color}88)`,
+//           }}
+//         />
+//       </svg>
+//       <div
+//         style={{
+//           position: "absolute",
+//           inset: 0,
+//           display: "flex",
+//           flexDirection: "column",
+//           alignItems: "center",
+//           justifyContent: "center",
+//         }}
+//       >
+//         <span
+//           style={{
+//             fontFamily: "monospace",
+//             fontWeight: 800,
+//             fontSize: 18,
+//             color,
+//             lineHeight: 1,
+//           }}
+//         >
+//           {v.toFixed(0)}
+//         </span>
+//         <span
+//           style={{
+//             fontSize: 8,
+//             color: "#556677",
+//             fontFamily: "monospace",
+//             letterSpacing: ".06em",
+//           }}
+//         >
+//           %
+//         </span>
+//       </div>
+//     </div>
+//   );
+// }
+
+// const CLUSTER_EMOJI = {
+//   "Software & Technology": "💻",
+//   "Data Science & AI": "🤖",
+//   "Engineering & Manufacturing": "⚙️",
+//   "Design & Creative": "🎨",
+//   "Business & Management": "📈",
+//   "Healthcare & Medicine": "🏥",
+//   "Finance & Economics": "💰",
+//   "Education & Research": "📚",
+// };
+
+// const MATCH_COLORS = ["#00d2ff", "#a78bfa", "#f472b6"];
+// const PHASE_COLORS = ["#00d2ff", "#a78bfa", "#f472b6", "#fb923c", "#4ade80"];
+// const DIFF_COLORS = { Hard: "#f87171", Medium: "#fbbf24", Easy: "#4ade80" };
+
+// // ─────────────────────────────────────────────────────────
+// // SECTION WRAPPER
+// // ─────────────────────────────────────────────────────────
+// function Section({ title, icon, children, accent = "#00d2ff" }) {
+//   return (
+//     <div style={{ marginBottom: 40 }}>
+//       <div
+//         style={{
+//           display: "flex",
+//           alignItems: "center",
+//           gap: 12,
+//           marginBottom: 20,
+//         }}
+//       >
+//         <div
+//           style={{
+//             width: 36,
+//             height: 36,
+//             borderRadius: 10,
+//             background: `${accent}15`,
+//             border: `1px solid ${accent}30`,
+//             display: "grid",
+//             placeItems: "center",
+//             fontSize: 17,
+//             flexShrink: 0,
+//           }}
+//         >
+//           {icon}
+//         </div>
+//         <h2
+//           style={{
+//             fontFamily: "'Sora', sans-serif",
+//             fontWeight: 800,
+//             fontSize: 18,
+//             letterSpacing: "-.025em",
+//           }}
+//         >
+//           {title}
+//         </h2>
+//         <div
+//           style={{ flex: 1, height: 1, background: "rgba(255,255,255,.06)" }}
+//         />
+//       </div>
+//       {children}
+//     </div>
+//   );
+// }
+
+// // ─────────────────────────────────────────────────────────
+// // MAIN RESULT COMPONENT
+// // ─────────────────────────────────────────────────────────
+// export default function CareerResult({
+//   student = DEMO_STUDENT,
+//   matchData = DEMO_MATCH,
+//   roadmap = DEMO_ROADMAP,
+//   onRestart = () => {},
+// }) {
+//   const [activeTab, setActiveTab] = useState("overview");
+//   const [chatOpen, setChatOpen] = useState(false);
+//   const [msgs, setMsgs] = useState([]);
+//   const [chatInp, setChatInp] = useState("");
+//   const [chatLoad, setChatLoad] = useState(false);
+//   const chatEndRef = useRef(null);
+
+//   useEffect(() => {
+//     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+//   }, [msgs]);
+
+//   const sendChat = async () => {
+//     if (!chatInp.trim()) return;
+//     const um = { role: "user", content: chatInp };
+//     setMsgs((m) => [...m, um]);
+//     setChatInp("");
+//     setChatLoad(true);
+//     await new Promise((r) => setTimeout(r, 1200));
+//     setMsgs((m) => [
+//       ...m,
+//       {
+//         role: "assistant",
+//         content: `Great question about ${roadmap.careerTitle}!\n\n• Prioritize building real projects over tutorials\n• Join communities in your field — Discord, meetups\n• Set 30-day milestones and track publicly on GitHub\n• Consistency beats intensity every single time\n\nWant me to go deeper on any of these?`,
+//       },
+//     ]);
+//     setChatLoad(false);
+//   };
+
+//   const topMatch = matchData.predictions[0];
+
+//   const TABS = [
+//     { id: "overview", label: "Overview" },
+//     { id: "roadmap", label: "Roadmap" },
+//     { id: "careers", label: "Careers" },
+//     { id: "colleges", label: "Colleges" },
+//     { id: "tips", label: "Tips" },
+//   ];
+
+//   return (
+//     <>
+//       <style>{`
+//         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap');
+//         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+//         body { background: #060e1a; }
+//         ::-webkit-scrollbar { width: 4px; }
+//         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+//         @keyframes fadeUp  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+//         @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+//         @keyframes spin    { to { transform: rotate(360deg); } }
+//         @keyframes dotPulse { 0%,80%,100%{opacity:0;transform:scale(.75)} 40%{opacity:1;transform:scale(1)} }
+//         @keyframes shimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+//         @keyframes glowPulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+//         .tab-btn:hover { color: #ccdde8 !important; }
+//         .chip-btn:hover { border-color: rgba(0,210,255,.4) !important; color: #ccdde8 !important; }
+//         .match-card:hover { transform: translateY(-1px); }
+//         .phase-box:hover { border-color: rgba(255,255,255,.12) !important; }
+//         .career-card:hover { border-color: rgba(255,255,255,.12) !important; }
+//       `}</style>
+
+//       <div
+//         style={{
+//           minHeight: "100vh",
+//           background: "#060e1a",
+//           color: "#ccdde8",
+//           fontFamily: "'Sora', sans-serif",
+//           backgroundImage: `
+//           radial-gradient(ellipse 80% 50% at 0% 0%, rgba(0,210,255,.05) 0%, transparent 60%),
+//           radial-gradient(ellipse 60% 40% at 100% 100%, rgba(167,139,250,.06) 0%, transparent 60%)
+//         `,
+//         }}
+//       >
+//         {/* ═══ HERO HEADER ═══ */}
+//         <div
+//           style={{
+//             padding: "48px 32px 0",
+//             maxWidth: 860,
+//             margin: "0 auto",
+//             animation: "fadeUp .5s ease both",
+//           }}
+//         >
+//           {/* Top bar */}
+//           <div
+//             style={{
+//               display: "flex",
+//               justifyContent: "space-between",
+//               alignItems: "flex-start",
+//               marginBottom: 36,
+//               flexWrap: "wrap",
+//               gap: 16,
+//             }}
+//           >
+//             <div>
+//               <div
+//                 style={{
+//                   display: "inline-flex",
+//                   alignItems: "center",
+//                   gap: 6,
+//                   fontFamily: "'DM Mono', monospace",
+//                   fontSize: 10,
+//                   letterSpacing: ".14em",
+//                   color: "#00d2ff",
+//                   border: "1px solid rgba(0,210,255,.25)",
+//                   padding: "4px 12px",
+//                   borderRadius: 20,
+//                   marginBottom: 14,
+//                   background: "rgba(0,210,255,.05)",
+//                 }}
+//               >
+//                 <span style={{ animation: "glowPulse 2s infinite" }}>●</span>{" "}
+//                 ANALYSIS COMPLETE
+//               </div>
+//               <h1
+//                 style={{
+//                   fontFamily: "'Sora', sans-serif",
+//                   fontWeight: 900,
+//                   fontSize: "clamp(26px,4vw,42px)",
+//                   letterSpacing: "-.04em",
+//                   lineHeight: 1.1,
+//                   marginBottom: 10,
+//                 }}
+//               >
+//                 Your Career Report,
+//                 <br />
+//                 <span
+//                   style={{
+//                     background:
+//                       "linear-gradient(90deg, #00d2ff, #a78bfa, #f472b6)",
+//                     backgroundClip: "text",
+//                     WebkitBackgroundClip: "text",
+//                     WebkitTextFillColor: "transparent",
+//                   }}
+//                 >
+//                   {student.name.split(" ")[0]}
+//                 </span>
+//               </h1>
+//               <p style={{ color: "#6b7f94", fontSize: 14, lineHeight: 1.75 }}>
+//                 ML model analyzed your profile against{" "}
+//                 <b
+//                   style={{
+//                     color: "#00d2ff",
+//                     fontFamily: "'DM Mono', monospace",
+//                   }}
+//                 >
+//                   {matchData.similar_students_count}+
+//                 </b>{" "}
+//                 similar students ·{" "}
+//                 {student.edu === "12" ? "Class 12" : student.edu} ·{" "}
+//                 {student.stream}
+//               </p>
+//             </div>
+//             <button
+//               onClick={onRestart}
+//               style={{
+//                 padding: "10px 20px",
+//                 background: "transparent",
+//                 border: "1px solid rgba(255,255,255,.1)",
+//                 borderRadius: 11,
+//                 color: "#6b7f94",
+//                 fontFamily: "'Sora', sans-serif",
+//                 fontSize: 13,
+//                 cursor: "pointer",
+//                 whiteSpace: "nowrap",
+//                 flexShrink: 0,
+//               }}
+//             >
+//               ← Start Over
+//             </button>
+//           </div>
+
+//           {/* ── TOP MATCH HERO CARD ── */}
+//           <div
+//             style={{
+//               background:
+//                 "linear-gradient(135deg, rgba(0,210,255,.07), rgba(167,139,250,.05))",
+//               border: "1px solid rgba(0,210,255,.2)",
+//               borderRadius: 20,
+//               padding: "28px 32px",
+//               display: "flex",
+//               alignItems: "center",
+//               gap: 28,
+//               marginBottom: 16,
+//               position: "relative",
+//               overflow: "hidden",
+//               animation: "fadeUp .5s .1s ease both",
+//               flexWrap: "wrap",
+//             }}
+//           >
+//             {/* Background glow */}
+//             <div
+//               style={{
+//                 position: "absolute",
+//                 top: -40,
+//                 right: -40,
+//                 width: 180,
+//                 height: 180,
+//                 borderRadius: "50%",
+//                 background: "rgba(0,210,255,.06)",
+//                 filter: "blur(40px)",
+//                 pointerEvents: "none",
+//               }}
+//             />
+
+//             <div
+//               style={{
+//                 fontSize: 52,
+//                 flexShrink: 0,
+//                 filter: "drop-shadow(0 0 20px rgba(0,210,255,.3))",
+//               }}
+//             >
+//               {CLUSTER_EMOJI[topMatch.career_cluster] || "🎯"}
+//             </div>
+
+//             <div style={{ flex: 1, minWidth: 0 }}>
+//               <div
+//                 style={{
+//                   fontFamily: "'DM Mono', monospace",
+//                   fontSize: 9,
+//                   letterSpacing: ".14em",
+//                   color: "#00d2ff",
+//                   marginBottom: 8,
+//                 }}
+//               >
+//                 👑 #1 BEST MATCH
+//               </div>
+//               <div
+//                 style={{
+//                   fontFamily: "'Sora', sans-serif",
+//                   fontWeight: 900,
+//                   fontSize: "clamp(20px,3vw,30px)",
+//                   letterSpacing: "-.03em",
+//                   marginBottom: 6,
+//                   lineHeight: 1.1,
+//                 }}
+//               >
+//                 {topMatch.career_cluster}
+//               </div>
+//               <div style={{ fontSize: 13, color: "#6b7f94", marginBottom: 14 }}>
+//                 {topMatch.match_strength}
+//               </div>
+//               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+//                 {[
+//                   `${roadmap.totalDuration} timeline`,
+//                   `${roadmap.phases.length} learning phases`,
+//                   roadmap.difficulty + " difficulty",
+//                 ].map((tag, i) => (
+//                   <span
+//                     key={i}
+//                     style={{
+//                       padding: "4px 12px",
+//                       borderRadius: 999,
+//                       border: "1px solid rgba(255,255,255,.09)",
+//                       fontSize: 11,
+//                       color: "#8b9cb5",
+//                       fontFamily: "'DM Mono', monospace",
+//                     }}
+//                   >
+//                     {tag}
+//                   </span>
+//                 ))}
+//               </div>
+//             </div>
+
+//             <ConfidenceRing
+//               value={topMatch.confidence}
+//               color="#00d2ff"
+//               size={96}
+//             />
+//           </div>
+
+//           {/* ── OTHER MATCHES ── */}
+//           <div
+//             style={{
+//               display: "grid",
+//               gridTemplateColumns: "1fr 1fr",
+//               gap: 12,
+//               marginBottom: 36,
+//               animation: "fadeUp .5s .15s ease both",
+//             }}
+//           >
+//             {matchData.predictions.slice(1).map((p, i) => (
+//               <div
+//                 key={i}
+//                 style={{
+//                   background: "rgba(255,255,255,.025)",
+//                   border: "1px solid rgba(255,255,255,.07)",
+//                   borderRadius: 14,
+//                   padding: "16px 18px",
+//                   display: "flex",
+//                   alignItems: "center",
+//                   gap: 14,
+//                   transition: "all .18s",
+//                 }}
+//                 className="match-card"
+//               >
+//                 <ConfidenceRing
+//                   value={p.confidence}
+//                   color={MATCH_COLORS[i + 1]}
+//                   size={56}
+//                 />
+//                 <div style={{ flex: 1, minWidth: 0 }}>
+//                   <div
+//                     style={{
+//                       fontFamily: "'DM Mono', monospace",
+//                       fontSize: 8,
+//                       color: MATCH_COLORS[i + 1],
+//                       letterSpacing: ".1em",
+//                       marginBottom: 4,
+//                     }}
+//                   >
+//                     #{i + 2} MATCH
+//                   </div>
+//                   <div
+//                     style={{
+//                       fontWeight: 700,
+//                       fontSize: 13,
+//                       whiteSpace: "nowrap",
+//                       overflow: "hidden",
+//                       textOverflow: "ellipsis",
+//                       marginBottom: 2,
+//                     }}
+//                   >
+//                     {p.career_cluster}
+//                   </div>
+//                   <div style={{ fontSize: 11, color: "#6b7f94" }}>
+//                     {p.match_strength}
+//                   </div>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* ═══ TABS ═══ */}
+//         <div
+//           style={{
+//             position: "sticky",
+//             top: 0,
+//             zIndex: 50,
+//             background: "rgba(6,14,26,.85)",
+//             backdropFilter: "blur(14px)",
+//             borderBottom: "1px solid rgba(255,255,255,.06)",
+//             animation: "fadeIn .4s ease both",
+//           }}
+//         >
+//           <div
+//             style={{
+//               maxWidth: 860,
+//               margin: "0 auto",
+//               padding: "0 32px",
+//               display: "flex",
+//               gap: 2,
+//               overflowX: "auto",
+//             }}
+//           >
+//             {TABS.map((tab) => (
+//               <button
+//                 key={tab.id}
+//                 onClick={() => setActiveTab(tab.id)}
+//                 className="tab-btn"
+//                 style={{
+//                   padding: "16px 18px",
+//                   border: "none",
+//                   background: "transparent",
+//                   cursor: "pointer",
+//                   fontFamily: "'Sora', sans-serif",
+//                   fontSize: 13,
+//                   fontWeight: activeTab === tab.id ? 700 : 400,
+//                   color: activeTab === tab.id ? "#00d2ff" : "#556677",
+//                   borderBottom: `2px solid ${activeTab === tab.id ? "#00d2ff" : "transparent"}`,
+//                   transition: "all .15s",
+//                   whiteSpace: "nowrap",
+//                 }}
+//               >
+//                 {tab.label}
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* ═══ TAB CONTENT ═══ */}
+//         <div
+//           style={{
+//             maxWidth: 860,
+//             margin: "0 auto",
+//             padding: "40px 32px 120px",
+//             animation: "fadeUp .35s ease both",
+//           }}
+//           key={activeTab}
+//         >
+//           {/* ──────── OVERVIEW TAB ──────── */}
+//           {activeTab === "overview" && (
+//             <>
+//               <Section title="Feature Importance" icon="🧠" accent="#00d2ff">
+//                 <div
+//                   style={{
+//                     background: "rgba(255,255,255,.025)",
+//                     border: "1px solid rgba(255,255,255,.07)",
+//                     borderRadius: 16,
+//                     padding: "24px 28px",
+//                   }}
+//                 >
+//                   <p
+//                     style={{
+//                       fontSize: 13,
+//                       color: "#6b7f94",
+//                       marginBottom: 20,
+//                       lineHeight: 1.7,
+//                     }}
+//                   >
+//                     These are the top signals from your profile that the Random
+//                     Forest model weighted most heavily to determine your career
+//                     matches.
+//                   </p>
+//                   {matchData.key_factors.map((f, i) => (
+//                     <AnimBar
+//                       key={i}
+//                       label={f.factor}
+//                       value={f.weight}
+//                       color={MATCH_COLORS[i % MATCH_COLORS.length]}
+//                       delay={i * 100}
+//                     />
+//                   ))}
+//                 </div>
+//               </Section>
+
+//               <Section title="Roadmap Summary" icon="🗺️" accent="#a78bfa">
+//                 <p
+//                   style={{
+//                     fontSize: 14,
+//                     color: "#8b9cb5",
+//                     lineHeight: 1.85,
+//                     marginBottom: 24,
+//                     maxWidth: 680,
+//                   }}
+//                 >
+//                   {roadmap.summary}
+//                 </p>
+//                 <div
+//                   style={{
+//                     display: "grid",
+//                     gridTemplateColumns:
+//                       "repeat(auto-fill, minmax(180px, 1fr))",
+//                     gap: 12,
+//                   }}
+//                 >
+//                   {roadmap.phases.map((ph, i) => (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         background: "rgba(255,255,255,.025)",
+//                         border: "1px solid rgba(255,255,255,.07)",
+//                         borderRadius: 14,
+//                         padding: "16px 18px",
+//                       }}
+//                     >
+//                       <div
+//                         style={{
+//                           width: 32,
+//                           height: 32,
+//                           borderRadius: 9,
+//                           background: PHASE_COLORS[i],
+//                           display: "grid",
+//                           placeItems: "center",
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontWeight: 800,
+//                           fontSize: 12,
+//                           color: "#060e1a",
+//                           marginBottom: 10,
+//                         }}
+//                       >
+//                         {String(i + 1).padStart(2, "0")}
+//                       </div>
+//                       <div
+//                         style={{
+//                           fontWeight: 700,
+//                           fontSize: 13,
+//                           marginBottom: 3,
+//                         }}
+//                       >
+//                         {ph.title}
+//                       </div>
+//                       <div
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontSize: 9,
+//                           color: PHASE_COLORS[i],
+//                           letterSpacing: ".08em",
+//                         }}
+//                       >
+//                         {ph.duration}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </Section>
+
+//               <Section title="Career Paths" icon="💼" accent="#f472b6">
+//                 <div
+//                   style={{ display: "flex", flexDirection: "column", gap: 10 }}
+//                 >
+//                   {roadmap.careerPaths.map((cp, i) => (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         display: "flex",
+//                         alignItems: "center",
+//                         gap: 18,
+//                         background: "rgba(255,255,255,.025)",
+//                         border: "1px solid rgba(255,255,255,.07)",
+//                         borderRadius: 14,
+//                         padding: "16px 20px",
+//                         transition: "all .18s",
+//                       }}
+//                       className="career-card"
+//                     >
+//                       <div style={{ minWidth: 0, flex: 1 }}>
+//                         <div
+//                           style={{
+//                             fontWeight: 700,
+//                             fontSize: 15,
+//                             marginBottom: 3,
+//                           }}
+//                         >
+//                           {cp.role}
+//                         </div>
+//                         <div style={{ fontSize: 12, color: "#6b7f94" }}>
+//                           {cp.growth}
+//                         </div>
+//                       </div>
+//                       <div
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontWeight: 800,
+//                           fontSize: 16,
+//                           color: "#4ade80",
+//                           flexShrink: 0,
+//                         }}
+//                       >
+//                         {cp.salary}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </Section>
+//             </>
+//           )}
+
+//           {/* ──────── ROADMAP TAB ──────── */}
+//           {activeTab === "roadmap" && (
+//             <Section title="Your Learning Roadmap" icon="🗺️" accent="#a78bfa">
+//               <div style={{ display: "flex", flexDirection: "column" }}>
+//                 {roadmap.phases.map((ph, i) => {
+//                   const c = PHASE_COLORS[i % PHASE_COLORS.length];
+//                   return (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         display: "flex",
+//                         gap: 20,
+//                         animationDelay: `${i * 0.08}s`,
+//                         animation: "fadeUp .4s ease both",
+//                       }}
+//                     >
+//                       {/* Track */}
+//                       <div
+//                         style={{
+//                           display: "flex",
+//                           flexDirection: "column",
+//                           alignItems: "center",
+//                           paddingTop: 2,
+//                           flexShrink: 0,
+//                         }}
+//                       >
+//                         <div
+//                           style={{
+//                             width: 40,
+//                             height: 40,
+//                             borderRadius: 12,
+//                             background: c,
+//                             display: "grid",
+//                             placeItems: "center",
+//                             fontFamily: "'DM Mono', monospace",
+//                             fontWeight: 800,
+//                             fontSize: 13,
+//                             color: "#060e1a",
+//                             flexShrink: 0,
+//                             boxShadow: `0 0 18px ${c}55`,
+//                           }}
+//                         >
+//                           {String(i + 1).padStart(2, "0")}
+//                         </div>
+//                         {i < roadmap.phases.length - 1 && (
+//                           <div
+//                             style={{
+//                               width: 2,
+//                               flex: 1,
+//                               minHeight: 40,
+//                               background: `linear-gradient(${c}66, transparent)`,
+//                               margin: "8px 0",
+//                               borderRadius: 99,
+//                             }}
+//                           />
+//                         )}
+//                       </div>
+
+//                       {/* Body */}
+//                       <div style={{ flex: 1, paddingBottom: 32, minWidth: 0 }}>
+//                         <div
+//                           style={{
+//                             fontFamily: "'DM Mono', monospace",
+//                             fontSize: 10,
+//                             color: c,
+//                             letterSpacing: ".1em",
+//                             marginBottom: 5,
+//                           }}
+//                         >
+//                           {ph.duration}
+//                         </div>
+//                         <h3
+//                           style={{
+//                             fontFamily: "'Sora', sans-serif",
+//                             fontWeight: 800,
+//                             fontSize: 20,
+//                             letterSpacing: "-.025em",
+//                             marginBottom: 8,
+//                           }}
+//                         >
+//                           {ph.title}
+//                         </h3>
+//                         <p
+//                           style={{
+//                             color: "#6b7f94",
+//                             fontSize: 14,
+//                             lineHeight: 1.8,
+//                             marginBottom: 18,
+//                           }}
+//                         >
+//                           {ph.description}
+//                         </p>
+
+//                         <div
+//                           style={{
+//                             background: "rgba(255,255,255,.02)",
+//                             border: "1px solid rgba(255,255,255,.07)",
+//                             borderRadius: 15,
+//                             padding: 20,
+//                             display: "flex",
+//                             flexDirection: "column",
+//                             gap: 16,
+//                             transition: "all .2s",
+//                           }}
+//                           className="phase-box"
+//                         >
+//                           {/* Skills */}
+//                           <div>
+//                             <div
+//                               style={{
+//                                 fontFamily: "'DM Mono', monospace",
+//                                 fontSize: 9,
+//                                 letterSpacing: ".1em",
+//                                 color: "#445566",
+//                                 textTransform: "uppercase",
+//                                 marginBottom: 8,
+//                               }}
+//                             >
+//                               🎯 Skills
+//                             </div>
+//                             <div
+//                               style={{
+//                                 display: "flex",
+//                                 flexWrap: "wrap",
+//                                 gap: 6,
+//                               }}
+//                             >
+//                               {ph.skills.map((sk, j) => (
+//                                 <span
+//                                   key={j}
+//                                   style={{
+//                                     padding: "4px 12px",
+//                                     borderRadius: 999,
+//                                     border: `1px solid ${c}44`,
+//                                     color: c,
+//                                     fontSize: 11,
+//                                     fontFamily: "'DM Mono', monospace",
+//                                   }}
+//                                 >
+//                                   {sk}
+//                                 </span>
+//                               ))}
+//                             </div>
+//                           </div>
+
+//                           {/* Resources */}
+//                           <div>
+//                             <div
+//                               style={{
+//                                 fontFamily: "'DM Mono', monospace",
+//                                 fontSize: 9,
+//                                 letterSpacing: ".1em",
+//                                 color: "#445566",
+//                                 textTransform: "uppercase",
+//                                 marginBottom: 8,
+//                               }}
+//                             >
+//                               📚 Resources
+//                             </div>
+//                             {ph.resources.map((r, j) => (
+//                               <div
+//                                 key={j}
+//                                 style={{
+//                                   display: "flex",
+//                                   alignItems: "center",
+//                                   gap: 10,
+//                                   fontSize: 13,
+//                                   padding: "7px 0",
+//                                   borderBottom:
+//                                     j < ph.resources.length - 1
+//                                       ? "1px solid rgba(255,255,255,.05)"
+//                                       : "none",
+//                                 }}
+//                               >
+//                                 <span
+//                                   style={{
+//                                     fontFamily: "'DM Mono', monospace",
+//                                     fontSize: 8,
+//                                     padding: "2px 8px",
+//                                     borderRadius: 999,
+//                                     border: "1px solid",
+//                                     flexShrink: 0,
+//                                     ...(r.free
+//                                       ? {
+//                                           color: "#4ade80",
+//                                           borderColor: "rgba(74,222,128,.35)",
+//                                           background: "rgba(74,222,128,.08)",
+//                                         }
+//                                       : {
+//                                           color: "#fbbf24",
+//                                           borderColor: "rgba(251,191,36,.35)",
+//                                           background: "rgba(251,191,36,.08)",
+//                                         }),
+//                                   }}
+//                                 >
+//                                   {r.free ? "FREE" : "PAID"}
+//                                 </span>
+//                                 <span style={{ flex: 1, color: "#ccdde8" }}>
+//                                   {r.name}
+//                                 </span>
+//                                 <span
+//                                   style={{
+//                                     color: "#445566",
+//                                     fontSize: 11,
+//                                     flexShrink: 0,
+//                                   }}
+//                                 >
+//                                   {r.platform}
+//                                 </span>
+//                               </div>
+//                             ))}
+//                           </div>
+
+//                           {/* Milestones + Projects */}
+//                           <div
+//                             style={{
+//                               display: "grid",
+//                               gridTemplateColumns: "1fr 1fr",
+//                               gap: 16,
+//                             }}
+//                           >
+//                             <div>
+//                               <div
+//                                 style={{
+//                                   fontFamily: "'DM Mono', monospace",
+//                                   fontSize: 9,
+//                                   letterSpacing: ".1em",
+//                                   color: "#445566",
+//                                   textTransform: "uppercase",
+//                                   marginBottom: 8,
+//                                 }}
+//                               >
+//                                 ✅ Milestones
+//                               </div>
+//                               {ph.milestones.map((m, j) => (
+//                                 <div
+//                                   key={j}
+//                                   style={{
+//                                     fontSize: 12,
+//                                     color: "#6b7f94",
+//                                     padding: "3px 0",
+//                                     display: "flex",
+//                                     gap: 7,
+//                                     lineHeight: 1.5,
+//                                   }}
+//                                 >
+//                                   <span style={{ color: c, flexShrink: 0 }}>
+//                                     ◆
+//                                   </span>
+//                                   {m}
+//                                 </div>
+//                               ))}
+//                             </div>
+//                             <div>
+//                               <div
+//                                 style={{
+//                                   fontFamily: "'DM Mono', monospace",
+//                                   fontSize: 9,
+//                                   letterSpacing: ".1em",
+//                                   color: "#445566",
+//                                   textTransform: "uppercase",
+//                                   marginBottom: 8,
+//                                 }}
+//                               >
+//                                 🛠 Build
+//                               </div>
+//                               {ph.projects.map((p, j) => (
+//                                 <div
+//                                   key={j}
+//                                   style={{
+//                                     fontSize: 12,
+//                                     color: "#6b7f94",
+//                                     padding: "3px 0",
+//                                     display: "flex",
+//                                     gap: 7,
+//                                     lineHeight: 1.5,
+//                                   }}
+//                                 >
+//                                   <span
+//                                     style={{ color: "#fb923c", flexShrink: 0 }}
+//                                   >
+//                                     →
+//                                   </span>
+//                                   {p}
+//                                 </div>
+//                               ))}
+//                             </div>
+//                           </div>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   );
+//                 })}
+//               </div>
+//             </Section>
+//           )}
+
+//           {/* ──────── CAREERS TAB ──────── */}
+//           {activeTab === "careers" && (
+//             <Section title="Career Paths & Salaries" icon="💼" accent="#f472b6">
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   gap: 14,
+//                   marginBottom: 32,
+//                 }}
+//               >
+//                 {roadmap.careerPaths.map((cp, i) => (
+//                   <div
+//                     key={i}
+//                     style={{
+//                       background: "rgba(255,255,255,.025)",
+//                       border: "1px solid rgba(255,255,255,.07)",
+//                       borderRadius: 16,
+//                       padding: "22px 24px",
+//                       display: "flex",
+//                       gap: 20,
+//                       alignItems: "flex-start",
+//                       flexWrap: "wrap",
+//                       transition: "all .18s",
+//                     }}
+//                     className="career-card"
+//                   >
+//                     <div style={{ flex: 1, minWidth: 200 }}>
+//                       <div
+//                         style={{
+//                           fontFamily: "'Sora', sans-serif",
+//                           fontWeight: 800,
+//                           fontSize: 17,
+//                           marginBottom: 5,
+//                         }}
+//                       >
+//                         {cp.role}
+//                       </div>
+//                       <div
+//                         style={{
+//                           fontSize: 13,
+//                           color: "#6b7f94",
+//                           marginBottom: 12,
+//                         }}
+//                       >
+//                         {cp.growth}
+//                       </div>
+//                       <div
+//                         style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+//                       >
+//                         {cp.companies.map((c, j) => (
+//                           <span
+//                             key={j}
+//                             style={{
+//                               padding: "4px 11px",
+//                               borderRadius: 999,
+//                               background: "rgba(255,255,255,.04)",
+//                               border: "1px solid rgba(255,255,255,.08)",
+//                               fontSize: 11,
+//                               color: "#6b7f94",
+//                             }}
+//                           >
+//                             {c}
+//                           </span>
+//                         ))}
+//                       </div>
+//                     </div>
+//                     <div style={{ textAlign: "right", flexShrink: 0 }}>
+//                       <div
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontWeight: 800,
+//                           fontSize: 22,
+//                           color: "#4ade80",
+//                           marginBottom: 2,
+//                         }}
+//                       >
+//                         {cp.salary}
+//                       </div>
+//                       <div
+//                         style={{
+//                           fontSize: 10,
+//                           color: "#445566",
+//                           fontFamily: "'DM Mono', monospace",
+//                         }}
+//                       >
+//                         per annum
+//                       </div>
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             </Section>
+//           )}
+
+//           {/* ──────── COLLEGES TAB ──────── */}
+//           {activeTab === "colleges" && (
+//             <>
+//               <Section title="Entrance Exams" icon="📝" accent="#fb923c">
+//                 <div
+//                   style={{
+//                     display: "flex",
+//                     flexDirection: "column",
+//                     gap: 10,
+//                     marginBottom: 8,
+//                   }}
+//                 >
+//                   {roadmap.exams.map((e, i) => (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         background: "rgba(255,255,255,.025)",
+//                         border: "1px solid rgba(255,255,255,.07)",
+//                         borderRadius: 14,
+//                         padding: "16px 20px",
+//                         display: "flex",
+//                         justifyContent: "space-between",
+//                         alignItems: "center",
+//                         gap: 14,
+//                       }}
+//                     >
+//                       <div>
+//                         <div
+//                           style={{
+//                             fontWeight: 700,
+//                             fontSize: 15,
+//                             marginBottom: 4,
+//                           }}
+//                         >
+//                           {e.name}
+//                         </div>
+//                         <div style={{ fontSize: 12, color: "#6b7f94" }}>
+//                           {e.forWhat}
+//                         </div>
+//                       </div>
+//                       <span
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontSize: 10,
+//                           padding: "4px 12px",
+//                           borderRadius: 999,
+//                           border: "1px solid",
+//                           flexShrink: 0,
+//                           color: DIFF_COLORS[e.difficulty],
+//                           borderColor: `${DIFF_COLORS[e.difficulty]}44`,
+//                           background: `${DIFF_COLORS[e.difficulty]}12`,
+//                         }}
+//                       >
+//                         {e.difficulty}
+//                       </span>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </Section>
+
+//               <Section title="Top Colleges" icon="🏛️" accent="#a78bfa">
+//                 <div
+//                   style={{ display: "flex", flexDirection: "column", gap: 10 }}
+//                 >
+//                   {roadmap.colleges.map((c, i) => (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         background: "rgba(255,255,255,.025)",
+//                         border: "1px solid rgba(255,255,255,.07)",
+//                         borderRadius: 14,
+//                         padding: "16px 20px",
+//                         display: "flex",
+//                         alignItems: "center",
+//                         gap: 18,
+//                       }}
+//                     >
+//                       <div
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontWeight: 800,
+//                           color: "#00d2ff",
+//                           fontSize: 22,
+//                           minWidth: 36,
+//                           textAlign: "center",
+//                         }}
+//                       >
+//                         #{i + 1}
+//                       </div>
+//                       <div>
+//                         <div
+//                           style={{
+//                             fontWeight: 700,
+//                             fontSize: 15,
+//                             marginBottom: 3,
+//                           }}
+//                         >
+//                           {c.name}
+//                         </div>
+//                         <div style={{ fontSize: 12, color: "#6b7f94" }}>
+//                           {c.prog} · {c.loc} · {c.rank}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </Section>
+//             </>
+//           )}
+
+//           {/* ──────── TIPS TAB ──────── */}
+//           {activeTab === "tips" && (
+//             <>
+//               <Section
+//                 title="Pro Tips from Top Mentors"
+//                 icon="🔥"
+//                 accent="#fb923c"
+//               >
+//                 <div
+//                   style={{
+//                     display: "grid",
+//                     gridTemplateColumns:
+//                       "repeat(auto-fill, minmax(260px, 1fr))",
+//                     gap: 12,
+//                   }}
+//                 >
+//                   {roadmap.tips.map((tip, i) => (
+//                     <div
+//                       key={i}
+//                       style={{
+//                         background: "rgba(255,255,255,.025)",
+//                         border: "1px solid rgba(255,255,255,.07)",
+//                         borderRadius: 14,
+//                         padding: "18px 20px",
+//                         display: "flex",
+//                         gap: 14,
+//                       }}
+//                     >
+//                       <span
+//                         style={{
+//                           fontFamily: "'DM Mono', monospace",
+//                           fontWeight: 800,
+//                           fontSize: 22,
+//                           color: "rgba(0,210,255,.2)",
+//                           flexShrink: 0,
+//                           lineHeight: 1,
+//                         }}
+//                       >
+//                         {String(i + 1).padStart(2, "0")}
+//                       </span>
+//                       <p
+//                         style={{
+//                           fontSize: 13,
+//                           color: "#6b7f94",
+//                           lineHeight: 1.8,
+//                         }}
+//                       >
+//                         {tip}
+//                       </p>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </Section>
+
+//               <Section title="Mistakes to Avoid" icon="⚠️" accent="#f87171">
+//                 {roadmap.mistakes.map((m, i) => (
+//                   <div
+//                     key={i}
+//                     style={{
+//                       display: "flex",
+//                       gap: 12,
+//                       alignItems: "flex-start",
+//                       fontSize: 14,
+//                       color: "#6b7f94",
+//                       padding: "14px 18px",
+//                       background: "rgba(248,113,113,.04)",
+//                       border: "1px solid rgba(248,113,113,.12)",
+//                       borderRadius: 12,
+//                       marginBottom: 8,
+//                       lineHeight: 1.7,
+//                     }}
+//                   >
+//                     <span
+//                       style={{ color: "#f87171", flexShrink: 0, marginTop: 1 }}
+//                     >
+//                       ✗
+//                     </span>
+//                     <span>{m}</span>
+//                   </div>
+//                 ))}
+//               </Section>
+//             </>
+//           )}
+//         </div>
+
+//         {/* ═══ STICKY BOTTOM BAR ═══ */}
+//         <div
+//           style={{
+//             position: "fixed",
+//             bottom: 0,
+//             left: 0,
+//             right: 0,
+//             background: "rgba(6,14,26,.92)",
+//             backdropFilter: "blur(16px)",
+//             borderTop: "1px solid rgba(255,255,255,.07)",
+//             padding: "14px 24px",
+//             zIndex: 100,
+//             display: "flex",
+//             justifyContent: "center",
+//             gap: 12,
+//           }}
+//         >
+//           <button
+//             onClick={onRestart}
+//             style={{
+//               padding: "11px 22px",
+//               background: "transparent",
+//               border: "1px solid rgba(255,255,255,.1)",
+//               borderRadius: 11,
+//               color: "#6b7f94",
+//               fontFamily: "'Sora', sans-serif",
+//               fontSize: 13,
+//               cursor: "pointer",
+//             }}
+//           >
+//             ← Restart
+//           </button>
+//           <button
+//             onClick={() => setChatOpen(true)}
+//             style={{
+//               padding: "11px 24px",
+//               background: "linear-gradient(135deg, #00d2ff, #6366f1)",
+//               border: "none",
+//               borderRadius: 11,
+//               color: "#fff",
+//               fontFamily: "'Sora', sans-serif",
+//               fontWeight: 700,
+//               fontSize: 13,
+//               cursor: "pointer",
+//               boxShadow: "0 4px 20px rgba(0,210,255,.25)",
+//             }}
+//           >
+//             💬 Ask AI Counselor
+//           </button>
+//           <button
+//             onClick={() => window.print?.()}
+//             style={{
+//               padding: "11px 22px",
+//               background: "transparent",
+//               border: "1px solid rgba(255,255,255,.1)",
+//               borderRadius: 11,
+//               color: "#6b7f94",
+//               fontFamily: "'Sora', sans-serif",
+//               fontSize: 13,
+//               cursor: "pointer",
+//             }}
+//           >
+//             ↓ Save Report
+//           </button>
+//         </div>
+
+//         {/* ═══ AI CHAT DRAWER ═══ */}
+//         {chatOpen && (
+//           <div
+//             onClick={(e) => e.target === e.currentTarget && setChatOpen(false)}
+//             style={{
+//               position: "fixed",
+//               inset: 0,
+//               background: "rgba(0,0,0,.75)",
+//               zIndex: 9999,
+//               display: "flex",
+//               justifyContent: "flex-end",
+//               alignItems: "flex-end",
+//               padding: 20,
+//               backdropFilter: "blur(10px)",
+//               animation: "fadeIn .2s ease",
+//             }}
+//           >
+//             <div
+//               style={{
+//                 width: "min(430px, 100%)",
+//                 height: "min(600px, 92vh)",
+//                 background: "#080f1c",
+//                 border: "1px solid rgba(255,255,255,.1)",
+//                 borderRadius: 22,
+//                 display: "flex",
+//                 flexDirection: "column",
+//                 overflow: "hidden",
+//                 boxShadow:
+//                   "0 32px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(0,210,255,.08)",
+//               }}
+//             >
+//               {/* Chat header */}
+//               <div
+//                 style={{
+//                   padding: "17px 20px",
+//                   borderBottom: "1px solid rgba(255,255,255,.07)",
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   background: "rgba(0,210,255,.04)",
+//                 }}
+//               >
+//                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+//                   <div
+//                     style={{
+//                       width: 36,
+//                       height: 36,
+//                       borderRadius: 10,
+//                       background: "linear-gradient(135deg, #00d2ff, #6366f1)",
+//                       display: "grid",
+//                       placeItems: "center",
+//                       fontSize: 18,
+//                     }}
+//                   >
+//                     🤖
+//                   </div>
+//                   <div>
+//                     <div style={{ fontWeight: 800, fontSize: 14 }}>
+//                       AI Career Counselor
+//                     </div>
+//                     <div
+//                       style={{
+//                         fontFamily: "'DM Mono', monospace",
+//                         fontSize: 10,
+//                         color: "#00d2ff",
+//                         marginTop: 2,
+//                       }}
+//                     >
+//                       <span
+//                         style={{
+//                           animation: "glowPulse 2s infinite",
+//                           display: "inline-block",
+//                         }}
+//                       >
+//                         ●
+//                       </span>{" "}
+//                       Online · Knows your full profile
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <button
+//                   onClick={() => setChatOpen(false)}
+//                   style={{
+//                     background: "none",
+//                     border: "1px solid rgba(255,255,255,.1)",
+//                     borderRadius: 8,
+//                     width: 30,
+//                     height: 30,
+//                     display: "grid",
+//                     placeItems: "center",
+//                     cursor: "pointer",
+//                     color: "#6b7f94",
+//                     fontSize: 13,
+//                   }}
+//                 >
+//                   ✕
+//                 </button>
+//               </div>
+
+//               {/* Messages */}
+//               <div
+//                 style={{
+//                   flex: 1,
+//                   overflowY: "auto",
+//                   padding: 16,
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   gap: 12,
+//                 }}
+//               >
+//                 {msgs.length === 0 && (
+//                   <div
+//                     style={{
+//                       textAlign: "center",
+//                       padding: "36px 20px",
+//                       color: "#445566",
+//                       fontSize: 13,
+//                       lineHeight: 1.85,
+//                     }}
+//                   >
+//                     <div style={{ fontSize: 38, marginBottom: 12 }}>👋</div>
+//                     <p>
+//                       Hi{" "}
+//                       <b style={{ color: "#ccdde8" }}>
+//                         {student.name.split(" ")[0]}
+//                       </b>
+//                       !<br />
+//                       I've read your full career report. Ask me anything — what
+//                       to do this week, how to get your first internship, which
+//                       skills to focus on first...
+//                     </p>
+//                   </div>
+//                 )}
+//                 {msgs.map((m, i) => (
+//                   <div
+//                     key={i}
+//                     style={{
+//                       display: "flex",
+//                       justifyContent:
+//                         m.role === "user" ? "flex-end" : "flex-start",
+//                     }}
+//                   >
+//                     <div
+//                       style={{
+//                         maxWidth: "84%",
+//                         padding: "11px 15px",
+//                         borderRadius: 16,
+//                         fontSize: 13,
+//                         lineHeight: 1.7,
+//                         whiteSpace: "pre-wrap",
+//                         ...(m.role === "user"
+//                           ? {
+//                               background:
+//                                 "linear-gradient(135deg, #00d2ff, #6366f1)",
+//                               color: "#fff",
+//                               borderRadius: "16px 16px 4px 16px",
+//                               fontWeight: 500,
+//                             }
+//                           : {
+//                               background: "rgba(255,255,255,.06)",
+//                               color: "#ccdde8",
+//                               borderRadius: "16px 16px 16px 4px",
+//                             }),
+//                       }}
+//                     >
+//                       {m.content}
+//                     </div>
+//                   </div>
+//                 ))}
+//                 {chatLoad && (
+//                   <div style={{ display: "flex" }}>
+//                     <div
+//                       style={{
+//                         background: "rgba(255,255,255,.06)",
+//                         padding: "12px 16px",
+//                         borderRadius: "16px 16px 16px 4px",
+//                         display: "flex",
+//                         gap: 5,
+//                         alignItems: "center",
+//                       }}
+//                     >
+//                       {[0, 1, 2].map((n) => (
+//                         <span
+//                           key={n}
+//                           style={{
+//                             width: 6,
+//                             height: 6,
+//                             borderRadius: "50%",
+//                             background: "#445566",
+//                             display: "inline-block",
+//                             animation: `dotPulse 1.4s ${n * 0.2}s infinite both`,
+//                           }}
+//                         />
+//                       ))}
+//                     </div>
+//                   </div>
+//                 )}
+//                 <div ref={chatEndRef} />
+//               </div>
+
+//               {/* Chat input */}
+//               <div
+//                 style={{
+//                   padding: "12px 14px",
+//                   borderTop: "1px solid rgba(255,255,255,.07)",
+//                   display: "flex",
+//                   gap: 10,
+//                 }}
+//               >
+//                 <input
+//                   value={chatInp}
+//                   onChange={(e) => setChatInp(e.target.value)}
+//                   onKeyDown={(e) => e.key === "Enter" && sendChat()}
+//                   placeholder="What should I do first this week?"
+//                   style={{
+//                     flex: 1,
+//                     background: "rgba(255,255,255,.06)",
+//                     border: "1px solid rgba(255,255,255,.1)",
+//                     borderRadius: 12,
+//                     padding: "11px 15px",
+//                     color: "#ccdde8",
+//                     fontFamily: "'Sora', sans-serif",
+//                     fontSize: 13,
+//                     outline: "none",
+//                   }}
+//                 />
+//                 <button
+//                   onClick={sendChat}
+//                   disabled={!chatInp.trim() || chatLoad}
+//                   style={{
+//                     width: 40,
+//                     height: 40,
+//                     borderRadius: 11,
+//                     background: "linear-gradient(135deg, #00d2ff, #6366f1)",
+//                     border: "none",
+//                     color: "#fff",
+//                     fontSize: 18,
+//                     fontWeight: 800,
+//                     cursor: "pointer",
+//                     display: "grid",
+//                     placeItems: "center",
+//                     flexShrink: 0,
+//                     opacity: !chatInp.trim() || chatLoad ? 0.4 : 1,
+//                   }}
+//                 >
+//                   ↑
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </>
+//   );
+// }
+
+import { useState, useEffect, useRef } from "react";
+
+const DEMO_STUDENT = {
+  name: "Priya Sharma",
+  edu: "12",
+  stream: "Science (PCM)",
+  score: 82,
+};
+
+const DEMO_MATCH = {
+  predictions: [
+    {
+      career_cluster: "Software & Technology",
+      confidence: 72.4,
+      match_strength: "Excellent Match",
+    },
+    {
+      career_cluster: "Data Science & AI",
+      confidence: 51.2,
+      match_strength: "Strong Match",
+    },
+    {
+      career_cluster: "Engineering & Manufacturing",
+      confidence: 31.8,
+      match_strength: "Good Match",
+    },
+  ],
+  key_factors: [
+    { factor: "Interest in Technology", weight: 18.2 },
+    { factor: "Coding Skills", weight: 14.5 },
+    { factor: "Analytical Thinking", weight: 12.1 },
+    { factor: "Academic Score", weight: 9.8 },
+    { factor: "Engineering Stream", weight: 8.3 },
+  ],
+  similar_students_count: 248,
+};
+
+const DEMO_ROADMAP = {
+  careerTitle: "Software & Technology",
+  summary:
+    "Based on your Science background and strong analytical profile, you're an excellent fit for software engineering.",
+  totalDuration: "18–24 months",
+  difficulty: "Moderate",
+  phases: [
+    {
+      title: "Core Foundations",
+      duration: "Month 1–4",
+      description: "Build an unshakeable base in programming fundamentals.",
+      skills: [
+        "Python / JavaScript",
+        "Data Structures",
+        "Algorithms",
+        "Git & GitHub",
+      ],
+      resources: [
+        { name: "CS50 by Harvard", platform: "edX", free: true },
+        { name: "The Odin Project", platform: "Web", free: true },
+        { name: "LeetCode Easy", platform: "LeetCode", free: true },
+      ],
+      milestones: ["Complete 50 coding problems", "Ship 2 solo projects"],
+      projects: ["Portfolio website", "CLI to-do app"],
+    },
+    {
+      title: "Specialize & Build",
+      duration: "Month 5–10",
+      description: "Go deep on a stack. Contribute to open source.",
+      skills: ["React / Node.js", "SQL + NoSQL", "REST APIs", "Docker"],
+      resources: [
+        { name: "Full Stack Open", platform: "Univ. of Helsinki", free: true },
+        { name: "MongoDB University", platform: "MongoDB", free: true },
+        { name: "System Design Primer", platform: "GitHub", free: true },
+      ],
+      milestones: ["Launch 1 production app", "Merge 1 open-source PR"],
+      projects: ["Full-stack e-commerce", "Open-source contribution"],
+    },
+    {
+      title: "Real-World Experience",
+      duration: "Month 11–16",
+      description: "Internships, mentors, professional communication.",
+      skills: [
+        "Agile/Scrum",
+        "Code Review",
+        "Team Collaboration",
+        "Technical Writing",
+      ],
+      resources: [
+        { name: "Internshala", platform: "Internshala", free: true },
+        { name: "LinkedIn Learning", platform: "LinkedIn", free: false },
+      ],
+      milestones: ["1 paid internship", "200+ LinkedIn network"],
+      projects: ["Internship capstone", "2 tech blog posts"],
+    },
+    {
+      title: "Interview & Land the Job",
+      duration: "Month 17–24",
+      description: "Systematic interview prep. System design mastery.",
+      skills: [
+        "System Design",
+        "Behavioural Interviews",
+        "DSA Advanced",
+        "Salary Negotiation",
+      ],
+      resources: [
+        {
+          name: "Cracking the Coding Interview",
+          platform: "Book",
+          free: false,
+        },
+        { name: "Pramp — Mock Interviews", platform: "Pramp", free: true },
+        { name: "Naukri / LinkedIn Jobs", platform: "Job Portal", free: true },
+      ],
+      milestones: ["200 LeetCode problems", "5+ offer letters"],
+      projects: ["Capstone SaaS product", "System design video walkthrough"],
+    },
+  ],
+  careerPaths: [
+    {
+      role: "Junior Software Engineer",
+      salary: "₹4–8 LPA",
+      companies: ["TCS", "Infosys", "Wipro", "Startups"],
+      growth: "→ SE → Senior SE → Tech Lead",
+    },
+    {
+      role: "Full Stack Developer",
+      salary: "₹6–15 LPA",
+      companies: ["Razorpay", "Zepto", "Zomato", "Startups"],
+      growth: "→ Senior Dev → Eng Manager",
+    },
+    {
+      role: "Product Engineer",
+      salary: "₹12–25 LPA",
+      companies: ["Flipkart", "Swiggy", "CRED", "Dream11"],
+      growth: "→ Staff Eng → Principal Engineer",
+    },
+  ],
+  exams: [
+    { name: "GATE", forWhat: "M.Tech / PSU Jobs", difficulty: "Hard" },
+    {
+      name: "AMCAT / CoCubes",
+      forWhat: "Campus placements (500+ companies)",
+      difficulty: "Easy",
+    },
+    {
+      name: "Google / MS Hiring",
+      forWhat: "Big Tech Direct",
+      difficulty: "Hard",
+    },
+  ],
+  colleges: [
+    {
+      name: "IIT Bombay",
+      loc: "Mumbai",
+      prog: "M.Tech CSE",
+      rank: "#1 in India",
+    },
+    {
+      name: "BITS Pilani",
+      loc: "Rajasthan",
+      prog: "M.E. Software Systems",
+      rank: "Top 10",
+    },
+    {
+      name: "IIIT Hyderabad",
+      loc: "Hyderabad",
+      prog: "M.Tech CS",
+      rank: "Top 5 for CS",
+    },
+  ],
+  tips: [
+    "Build in public from Day 1 — LinkedIn + GitHub + Twitter",
+    "3 exceptional projects beat 20 mediocre ones every time",
+    "Join coding communities: Discord, meetups, hackathons",
+    "Communication is a career multiplier — invest in it",
+    "Apply to 5× more jobs than you think you need to",
+  ],
+  mistakes: [
+    "Tutorial hell — consuming without building anything real",
+    "Waiting until 'ready' — rejections teach more than courses",
+    "Skipping DSA — 90% of tech interviews test it directly",
+  ],
+};
+
+// ── Normalize roadmap — handles both Gemini and demo field names ──────────────
+function normalizeRoadmap(rm) {
+  if (!rm) return rm;
+  return {
+    ...rm,
+    // salary: handles both "salary" and "salary_range"
+    careerPaths: (rm.careerPaths || []).map((cp) => ({
+      ...cp,
+      salary: cp.salary || cp.salary_range || cp.salaryRange || "",
+    })),
+    // exams: handles both "exams" and "entranceExams"
+    exams: (rm.exams || rm.entranceExams || []).map((e) => ({
+      name: e.name,
+      forWhat: e.forWhat || e.for || "",
+      difficulty: e.difficulty || "Medium",
+    })),
+    // colleges: handles both short keys (loc/prog/rank) and long keys (location/program/ranking)
+    colleges: (rm.colleges || rm.topColleges || []).map((c) => ({
+      name: c.name,
+      loc: c.loc || c.location || "",
+      prog: c.prog || c.program || "",
+      rank: c.rank || c.ranking || "",
+    })),
+    // tips: handles both "tips" and "proTips"
+    tips: rm.tips || rm.proTips || [],
+    // mistakes: handles both "mistakes" and "commonMistakes"
+    mistakes: rm.mistakes || rm.commonMistakes || [],
+  };
+}
+
+function AnimBar({ label, value, color, delay = 0 }) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setWidth(value), 120 + delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return (
+    <div style={{ marginBottom: 13 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 5,
+        }}
+      >
+        <span style={{ fontSize: 12, color: "#8b9cb5" }}>{label}</span>
+        <span
+          style={{
+            fontSize: 11,
+            color,
+            fontFamily: "monospace",
+            fontWeight: 700,
+          }}
+        >
+          {value.toFixed(1)}%
+        </span>
+      </div>
+      <div
+        style={{
+          height: 6,
+          borderRadius: 99,
+          background: "rgba(255,255,255,.06)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${width}%`,
+            borderRadius: 99,
+            background: `linear-gradient(90deg,${color},${color}aa)`,
+            boxShadow: `0 0 10px ${color}55`,
+            transition: "width 1.3s cubic-bezier(0.16,1,0.3,1)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ConfidenceRing({ value, color, size = 90 }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), 300);
+    return () => clearTimeout(t);
+  }, [value]);
+  const r = 38,
+    circ = 2 * Math.PI * r,
+    dash = circ - (v / 100) * circ;
+  return (
+    <div
+      style={{ position: "relative", width: size, height: size, flexShrink: 0 }}
+    >
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="rgba(255,255,255,.06)"
+          strokeWidth="6"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="6"
+          strokeDasharray={circ}
+          strokeDashoffset={dash}
+          strokeLinecap="round"
+          style={{
+            transition: "stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1)",
+            filter: `drop-shadow(0 0 6px ${color}88)`,
+          }}
+        />
+      </svg>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontWeight: 800,
+            fontSize: 18,
+            color,
+            lineHeight: 1,
+          }}
+        >
+          {v.toFixed(0)}
+        </span>
+        <span
+          style={{
+            fontSize: 8,
+            color: "#556677",
+            fontFamily: "monospace",
+            letterSpacing: ".06em",
+          }}
+        >
+          %
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const CLUSTER_EMOJI = {
+  "Software & Technology": "💻",
+  "Data Science & AI": "🤖",
+  "Engineering & Manufacturing": "⚙️",
+  "Design & Creative": "🎨",
+  "Business & Management": "📈",
+  "Healthcare & Medicine": "🏥",
+  "Finance & Economics": "💰",
+  "Education & Research": "📚",
+  "Media & Communication": "📡",
+  "Entrepreneurship & Startups": "🚀",
+  "Social Work & NGO": "🤝",
+  "Government & Civil Services": "🏛️",
+  "Arts & Humanities": "🎭",
+  "Agriculture & Environment": "🌿",
+  "Law & Public Policy": "⚖️",
+};
+const MATCH_COLORS = ["#00d2ff", "#a78bfa", "#f472b6"];
+const PHASE_COLORS = ["#00d2ff", "#a78bfa", "#f472b6", "#fb923c", "#4ade80"];
+const DIFF_COLORS = { Hard: "#f87171", Medium: "#fbbf24", Easy: "#4ade80" };
+
+function Section({ title, icon, children, accent = "#00d2ff" }) {
+  return (
+    <div style={{ marginBottom: 40 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 20,
+        }}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: `${accent}15`,
+            border: `1px solid ${accent}30`,
+            display: "grid",
+            placeItems: "center",
+            fontSize: 17,
+            flexShrink: 0,
+          }}
+        >
+          {icon}
+        </div>
+        <h2
+          style={{
+            fontFamily: "'Sora',sans-serif",
+            fontWeight: 800,
+            fontSize: 18,
+            letterSpacing: "-.025em",
+          }}
+        >
+          {title}
+        </h2>
+        <div
+          style={{ flex: 1, height: 1, background: "rgba(255,255,255,.06)" }}
+        />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+export default function CareerResult({
+  student = DEMO_STUDENT,
+  matchData = DEMO_MATCH,
+  roadmap: rawRoadmap = DEMO_ROADMAP,
+  onRestart = () => {},
+}) {
+  // Normalize once so all tabs use consistent field names
+  const roadmap = normalizeRoadmap(rawRoadmap);
+
+  const [activeTab, setActiveTab] = useState("overview");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [msgs, setMsgs] = useState([]);
+  const [chatInp, setChatInp] = useState("");
+  const [chatLoad, setChatLoad] = useState(false);
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs]);
+
+  const sendChat = async () => {
+    if (!chatInp.trim()) return;
+    setMsgs((m) => [...m, { role: "user", content: chatInp }]);
+    setChatInp("");
+    setChatLoad(true);
+    await new Promise((r) => setTimeout(r, 1200));
+    setMsgs((m) => [
+      ...m,
+      {
+        role: "assistant",
+        content: `Great question about ${roadmap.careerTitle}!\n\n• Prioritize building real projects over tutorials\n• Join communities in your field — Discord, meetups\n• Set 30-day milestones and track publicly on GitHub\n• Consistency beats intensity every single time\n\nWant me to go deeper on any of these?`,
+      },
+    ]);
+    setChatLoad(false);
+  };
+
+  const topMatch = matchData.predictions[0];
+  const TABS = [
+    { id: "overview", label: "Overview" },
+    { id: "roadmap", label: "Roadmap" },
+    { id: "careers", label: "Careers" },
+    { id: "colleges", label: "Colleges" },
+    { id: "tips", label: "Tips" },
+  ];
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap');
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        body { background:#060e1a; }
+        ::-webkit-scrollbar { width:4px; }
+        ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+        @keyframes fadeUp   { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+        @keyframes dotPulse { 0%,80%,100%{opacity:0;transform:scale(.75)} 40%{opacity:1;transform:scale(1)} }
+        @keyframes glowPulse{ 0%,100%{opacity:.5} 50%{opacity:1} }
+        .tab-btn:hover    { color:#ccdde8 !important; }
+        .match-card:hover { transform:translateY(-1px); }
+        .phase-box:hover  { border-color:rgba(255,255,255,.12) !important; }
+        .career-card:hover{ border-color:rgba(255,255,255,.12) !important; }
+      `}</style>
+
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#060e1a",
+          color: "#ccdde8",
+          fontFamily: "'Sora',sans-serif",
+          backgroundImage: `radial-gradient(ellipse 80% 50% at 0% 0%,rgba(0,210,255,.05) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(167,139,250,.06) 0%,transparent 60%)`,
+        }}
+      >
+        {/* ═══ HERO ═══ */}
+        <div
+          style={{
+            padding: "48px 32px 0",
+            maxWidth: 860,
+            margin: "0 auto",
+            animation: "fadeUp .5s ease both",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 36,
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontFamily: "'DM Mono',monospace",
+                  fontSize: 10,
+                  letterSpacing: ".14em",
+                  color: "#00d2ff",
+                  border: "1px solid rgba(0,210,255,.25)",
+                  padding: "4px 12px",
+                  borderRadius: 20,
+                  marginBottom: 14,
+                  background: "rgba(0,210,255,.05)",
+                }}
+              >
+                <span style={{ animation: "glowPulse 2s infinite" }}>●</span>{" "}
+                ANALYSIS COMPLETE
+              </div>
+              <h1
+                style={{
+                  fontFamily: "'Sora',sans-serif",
+                  fontWeight: 900,
+                  fontSize: "clamp(26px,4vw,42px)",
+                  letterSpacing: "-.04em",
+                  lineHeight: 1.1,
+                  marginBottom: 10,
+                }}
+              >
+                Your Career Report,
+                <br />
+                <span
+                  style={{
+                    background:
+                      "linear-gradient(90deg,#00d2ff,#a78bfa,#f472b6)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  {student.name.split(" ")[0]}
+                </span>
+              </h1>
+              <p style={{ color: "#6b7f94", fontSize: 14, lineHeight: 1.75 }}>
+                ML model analyzed your profile against{" "}
+                <b
+                  style={{
+                    color: "#00d2ff",
+                    fontFamily: "'DM Mono',monospace",
+                  }}
+                >
+                  {matchData.similar_students_count}+
+                </b>{" "}
+                similar students ·{" "}
+                {student.edu === "12" ? "Class 12" : student.edu} ·{" "}
+                {student.stream}
+              </p>
+            </div>
+            <button
+              onClick={onRestart}
+              style={{
+                padding: "10px 20px",
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,.1)",
+                borderRadius: 11,
+                color: "#6b7f94",
+                fontFamily: "'Sora',sans-serif",
+                fontSize: 13,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              ← Start Over
+            </button>
+          </div>
+
+          {/* Top match card */}
+          <div
+            style={{
+              background:
+                "linear-gradient(135deg,rgba(0,210,255,.07),rgba(167,139,250,.05))",
+              border: "1px solid rgba(0,210,255,.2)",
+              borderRadius: 20,
+              padding: "28px 32px",
+              display: "flex",
+              alignItems: "center",
+              gap: 28,
+              marginBottom: 16,
+              position: "relative",
+              overflow: "hidden",
+              animation: "fadeUp .5s .1s ease both",
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: -40,
+                right: -40,
+                width: 180,
+                height: 180,
+                borderRadius: "50%",
+                background: "rgba(0,210,255,.06)",
+                filter: "blur(40px)",
+                pointerEvents: "none",
+              }}
+            />
+            <div
+              style={{
+                fontSize: 52,
+                flexShrink: 0,
+                filter: "drop-shadow(0 0 20px rgba(0,210,255,.3))",
+              }}
+            >
+              {CLUSTER_EMOJI[topMatch.career_cluster] || "🎯"}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontFamily: "'DM Mono',monospace",
+                  fontSize: 9,
+                  letterSpacing: ".14em",
+                  color: "#00d2ff",
+                  marginBottom: 8,
+                }}
+              >
+                👑 #1 BEST MATCH
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Sora',sans-serif",
+                  fontWeight: 900,
+                  fontSize: "clamp(20px,3vw,30px)",
+                  letterSpacing: "-.03em",
+                  marginBottom: 6,
+                  lineHeight: 1.1,
+                }}
+              >
+                {topMatch.career_cluster}
+              </div>
+              <div style={{ fontSize: 13, color: "#6b7f94", marginBottom: 14 }}>
+                {topMatch.match_strength}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {[
+                  `${roadmap.totalDuration} timeline`,
+                  `${roadmap.phases.length} learning phases`,
+                  `${roadmap.difficulty} difficulty`,
+                ].map((tag, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: 999,
+                      border: "1px solid rgba(255,255,255,.09)",
+                      fontSize: 11,
+                      color: "#8b9cb5",
+                      fontFamily: "'DM Mono',monospace",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <ConfidenceRing
+              value={topMatch.confidence}
+              color="#00d2ff"
+              size={96}
+            />
+          </div>
+
+          {/* Other matches */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 12,
+              marginBottom: 36,
+              animation: "fadeUp .5s .15s ease both",
+            }}
+          >
+            {matchData.predictions.slice(1).map((p, i) => (
+              <div
+                key={i}
+                style={{
+                  background: "rgba(255,255,255,.025)",
+                  border: "1px solid rgba(255,255,255,.07)",
+                  borderRadius: 14,
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  transition: "all .18s",
+                }}
+                className="match-card"
+              >
+                <ConfidenceRing
+                  value={p.confidence}
+                  color={MATCH_COLORS[i + 1]}
+                  size={56}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontFamily: "'DM Mono',monospace",
+                      fontSize: 8,
+                      color: MATCH_COLORS[i + 1],
+                      letterSpacing: ".1em",
+                      marginBottom: 4,
+                    }}
+                  >
+                    #{i + 2} MATCH
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: 13,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {p.career_cluster}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#6b7f94" }}>
+                    {p.match_strength}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ TABS ═══ */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            background: "rgba(6,14,26,.85)",
+            backdropFilter: "blur(14px)",
+            borderBottom: "1px solid rgba(255,255,255,.06)",
+            animation: "fadeIn .4s ease both",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 860,
+              margin: "0 auto",
+              padding: "0 32px",
+              display: "flex",
+              gap: 2,
+              overflowX: "auto",
+            }}
+          >
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="tab-btn"
+                style={{
+                  padding: "16px 18px",
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontFamily: "'Sora',sans-serif",
+                  fontSize: 13,
+                  fontWeight: activeTab === tab.id ? 700 : 400,
+                  color: activeTab === tab.id ? "#00d2ff" : "#556677",
+                  borderBottom: `2px solid ${activeTab === tab.id ? "#00d2ff" : "transparent"}`,
+                  transition: "all .15s",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ TAB CONTENT ═══ */}
+        <div
+          style={{
+            maxWidth: 860,
+            margin: "0 auto",
+            padding: "40px 32px 120px",
+            animation: "fadeUp .35s ease both",
+          }}
+          key={activeTab}
+        >
+          {/* ── OVERVIEW ── */}
+          {activeTab === "overview" && (
+            <>
+              {/* Key factors — hidden if empty */}
+              {matchData.key_factors && matchData.key_factors.length > 0 && (
+                <Section title="Feature Importance" icon="🧠" accent="#00d2ff">
+                  <div
+                    style={{
+                      background: "rgba(255,255,255,.025)",
+                      border: "1px solid rgba(255,255,255,.07)",
+                      borderRadius: 16,
+                      padding: "24px 28px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: 13,
+                        color: "#6b7f94",
+                        marginBottom: 20,
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      Top signals the Random Forest model weighted from your
+                      profile:
+                    </p>
+                    {matchData.key_factors.map((f, i) => (
+                      <AnimBar
+                        key={i}
+                        label={f.factor}
+                        value={f.weight}
+                        color={MATCH_COLORS[i % MATCH_COLORS.length]}
+                        delay={i * 100}
+                      />
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              <Section title="Roadmap Summary" icon="🗺️" accent="#a78bfa">
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "#8b9cb5",
+                    lineHeight: 1.85,
+                    marginBottom: 24,
+                    maxWidth: 680,
+                  }}
+                >
+                  {roadmap.summary}
+                </p>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))",
+                    gap: 12,
+                  }}
+                >
+                  {roadmap.phases.map((ph, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "rgba(255,255,255,.025)",
+                        border: "1px solid rgba(255,255,255,.07)",
+                        borderRadius: 14,
+                        padding: "16px 18px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: 9,
+                          background: PHASE_COLORS[i],
+                          display: "grid",
+                          placeItems: "center",
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          fontSize: 12,
+                          color: "#060e1a",
+                          marginBottom: 10,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          fontSize: 13,
+                          marginBottom: 3,
+                        }}
+                      >
+                        {ph.title}
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontSize: 9,
+                          color: PHASE_COLORS[i],
+                          letterSpacing: ".08em",
+                        }}
+                      >
+                        {ph.duration}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+
+              <Section title="Career Paths" icon="💼" accent="#f472b6">
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  {roadmap.careerPaths.map((cp, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 18,
+                        background: "rgba(255,255,255,.025)",
+                        border: "1px solid rgba(255,255,255,.07)",
+                        borderRadius: 14,
+                        padding: "16px 20px",
+                        transition: "all .18s",
+                      }}
+                      className="career-card"
+                    >
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: 15,
+                            marginBottom: 3,
+                          }}
+                        >
+                          {cp.role}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#6b7f94" }}>
+                          {cp.growth}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          fontSize: 16,
+                          color: "#4ade80",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {cp.salary}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            </>
+          )}
+
+          {/* ── ROADMAP ── */}
+          {activeTab === "roadmap" && (
+            <Section title="Your Learning Roadmap" icon="🗺️" accent="#a78bfa">
+              {roadmap.phases.map((ph, i) => {
+                const c = PHASE_COLORS[i % PHASE_COLORS.length];
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      gap: 20,
+                      animation: "fadeUp .4s ease both",
+                      animationDelay: `${i * 0.08}s`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingTop: 2,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 12,
+                          background: c,
+                          display: "grid",
+                          placeItems: "center",
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          fontSize: 13,
+                          color: "#060e1a",
+                          flexShrink: 0,
+                          boxShadow: `0 0 18px ${c}55`,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      {i < roadmap.phases.length - 1 && (
+                        <div
+                          style={{
+                            width: 2,
+                            flex: 1,
+                            minHeight: 40,
+                            background: `linear-gradient(${c}66,transparent)`,
+                            margin: "8px 0",
+                            borderRadius: 99,
+                          }}
+                        />
+                      )}
+                    </div>
+                    <div style={{ flex: 1, paddingBottom: 32, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontSize: 10,
+                          color: c,
+                          letterSpacing: ".1em",
+                          marginBottom: 5,
+                        }}
+                      >
+                        {ph.duration}
+                      </div>
+                      <h3
+                        style={{
+                          fontFamily: "'Sora',sans-serif",
+                          fontWeight: 800,
+                          fontSize: 20,
+                          letterSpacing: "-.025em",
+                          marginBottom: 8,
+                        }}
+                      >
+                        {ph.title}
+                      </h3>
+                      <p
+                        style={{
+                          color: "#6b7f94",
+                          fontSize: 14,
+                          lineHeight: 1.8,
+                          marginBottom: 18,
+                        }}
+                      >
+                        {ph.description}
+                      </p>
+                      <div
+                        style={{
+                          background: "rgba(255,255,255,.02)",
+                          border: "1px solid rgba(255,255,255,.07)",
+                          borderRadius: 15,
+                          padding: 20,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 16,
+                          transition: "all .2s",
+                        }}
+                        className="phase-box"
+                      >
+                        <div>
+                          <div
+                            style={{
+                              fontFamily: "'DM Mono',monospace",
+                              fontSize: 9,
+                              letterSpacing: ".1em",
+                              color: "#445566",
+                              textTransform: "uppercase",
+                              marginBottom: 8,
+                            }}
+                          >
+                            🎯 Skills
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 6,
+                            }}
+                          >
+                            {ph.skills.map((sk, j) => (
+                              <span
+                                key={j}
+                                style={{
+                                  padding: "4px 12px",
+                                  borderRadius: 999,
+                                  border: `1px solid ${c}44`,
+                                  color: c,
+                                  fontSize: 11,
+                                  fontFamily: "'DM Mono',monospace",
+                                }}
+                              >
+                                {sk}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <div
+                            style={{
+                              fontFamily: "'DM Mono',monospace",
+                              fontSize: 9,
+                              letterSpacing: ".1em",
+                              color: "#445566",
+                              textTransform: "uppercase",
+                              marginBottom: 8,
+                            }}
+                          >
+                            📚 Resources
+                          </div>
+                          {ph.resources.map((r, j) => (
+                            <div
+                              key={j}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                fontSize: 13,
+                                padding: "7px 0",
+                                borderBottom:
+                                  j < ph.resources.length - 1
+                                    ? "1px solid rgba(255,255,255,.05)"
+                                    : "none",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "'DM Mono',monospace",
+                                  fontSize: 8,
+                                  padding: "2px 8px",
+                                  borderRadius: 999,
+                                  border: "1px solid",
+                                  flexShrink: 0,
+                                  ...(r.free
+                                    ? {
+                                        color: "#4ade80",
+                                        borderColor: "rgba(74,222,128,.35)",
+                                        background: "rgba(74,222,128,.08)",
+                                      }
+                                    : {
+                                        color: "#fbbf24",
+                                        borderColor: "rgba(251,191,36,.35)",
+                                        background: "rgba(251,191,36,.08)",
+                                      }),
+                                }}
+                              >
+                                {r.free ? "FREE" : "PAID"}
+                              </span>
+                              <span style={{ flex: 1, color: "#ccdde8" }}>
+                                {r.name}
+                              </span>
+                              <span
+                                style={{
+                                  color: "#445566",
+                                  fontSize: 11,
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {r.platform}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 16,
+                          }}
+                        >
+                          <div>
+                            <div
+                              style={{
+                                fontFamily: "'DM Mono',monospace",
+                                fontSize: 9,
+                                letterSpacing: ".1em",
+                                color: "#445566",
+                                textTransform: "uppercase",
+                                marginBottom: 8,
+                              }}
+                            >
+                              ✅ Milestones
+                            </div>
+                            {ph.milestones.map((m, j) => (
+                              <div
+                                key={j}
+                                style={{
+                                  fontSize: 12,
+                                  color: "#6b7f94",
+                                  padding: "3px 0",
+                                  display: "flex",
+                                  gap: 7,
+                                  lineHeight: 1.5,
+                                }}
+                              >
+                                <span style={{ color: c, flexShrink: 0 }}>
+                                  ◆
+                                </span>
+                                {m}
+                              </div>
+                            ))}
+                          </div>
+                          <div>
+                            <div
+                              style={{
+                                fontFamily: "'DM Mono',monospace",
+                                fontSize: 9,
+                                letterSpacing: ".1em",
+                                color: "#445566",
+                                textTransform: "uppercase",
+                                marginBottom: 8,
+                              }}
+                            >
+                              🛠 Build
+                            </div>
+                            {ph.projects.map((p, j) => (
+                              <div
+                                key={j}
+                                style={{
+                                  fontSize: 12,
+                                  color: "#6b7f94",
+                                  padding: "3px 0",
+                                  display: "flex",
+                                  gap: 7,
+                                  lineHeight: 1.5,
+                                }}
+                              >
+                                <span
+                                  style={{ color: "#fb923c", flexShrink: 0 }}
+                                >
+                                  →
+                                </span>
+                                {p}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </Section>
+          )}
+
+          {/* ── CAREERS ── */}
+          {activeTab === "careers" && (
+            <Section title="Career Paths & Salaries" icon="💼" accent="#f472b6">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                  marginBottom: 32,
+                }}
+              >
+                {roadmap.careerPaths.map((cp, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "rgba(255,255,255,.025)",
+                      border: "1px solid rgba(255,255,255,.07)",
+                      borderRadius: 16,
+                      padding: "22px 24px",
+                      display: "flex",
+                      gap: 20,
+                      alignItems: "flex-start",
+                      flexWrap: "wrap",
+                      transition: "all .18s",
+                    }}
+                    className="career-card"
+                  >
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <div
+                        style={{
+                          fontFamily: "'Sora',sans-serif",
+                          fontWeight: 800,
+                          fontSize: 17,
+                          marginBottom: 5,
+                        }}
+                      >
+                        {cp.role}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: "#6b7f94",
+                          marginBottom: 12,
+                        }}
+                      >
+                        {cp.growth}
+                      </div>
+                      <div
+                        style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+                      >
+                        {cp.companies.map((c, j) => (
+                          <span
+                            key={j}
+                            style={{
+                              padding: "4px 11px",
+                              borderRadius: 999,
+                              background: "rgba(255,255,255,.04)",
+                              border: "1px solid rgba(255,255,255,.08)",
+                              fontSize: 11,
+                              color: "#6b7f94",
+                            }}
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          fontSize: 22,
+                          color: "#4ade80",
+                          marginBottom: 2,
+                        }}
+                      >
+                        {cp.salary}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 10,
+                          color: "#445566",
+                          fontFamily: "'DM Mono',monospace",
+                        }}
+                      >
+                        per annum
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* ── COLLEGES ── */}
+          {activeTab === "colleges" && (
+            <>
+              <Section title="Entrance Exams" icon="📝" accent="#fb923c">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                    marginBottom: 8,
+                  }}
+                >
+                  {roadmap.exams.map((e, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "rgba(255,255,255,.025)",
+                        border: "1px solid rgba(255,255,255,.07)",
+                        borderRadius: 14,
+                        padding: "16px 20px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 14,
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: 15,
+                            marginBottom: 4,
+                          }}
+                        >
+                          {e.name}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#6b7f94" }}>
+                          {e.forWhat}
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontSize: 10,
+                          padding: "4px 12px",
+                          borderRadius: 999,
+                          border: "1px solid",
+                          flexShrink: 0,
+                          color: DIFF_COLORS[e.difficulty] || "#fbbf24",
+                          borderColor: `${DIFF_COLORS[e.difficulty] || "#fbbf24"}44`,
+                          background: `${DIFF_COLORS[e.difficulty] || "#fbbf24"}12`,
+                        }}
+                      >
+                        {e.difficulty}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+              <Section title="Top Colleges" icon="🏛️" accent="#a78bfa">
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  {roadmap.colleges.map((c, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "rgba(255,255,255,.025)",
+                        border: "1px solid rgba(255,255,255,.07)",
+                        borderRadius: 14,
+                        padding: "16px 20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 18,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          color: "#00d2ff",
+                          fontSize: 22,
+                          minWidth: 36,
+                          textAlign: "center",
+                        }}
+                      >
+                        #{i + 1}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: 15,
+                            marginBottom: 3,
+                          }}
+                        >
+                          {c.name}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#6b7f94" }}>
+                          {c.prog} · {c.loc} · {c.rank}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            </>
+          )}
+
+          {/* ── TIPS ── */}
+          {activeTab === "tips" && (
+            <>
+              <Section
+                title="Pro Tips from Top Mentors"
+                icon="🔥"
+                accent="#fb923c"
+              >
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))",
+                    gap: 12,
+                  }}
+                >
+                  {roadmap.tips.map((tip, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "rgba(255,255,255,.025)",
+                        border: "1px solid rgba(255,255,255,.07)",
+                        borderRadius: 14,
+                        padding: "18px 20px",
+                        display: "flex",
+                        gap: 14,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "'DM Mono',monospace",
+                          fontWeight: 800,
+                          fontSize: 22,
+                          color: "rgba(0,210,255,.2)",
+                          flexShrink: 0,
+                          lineHeight: 1,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <p
+                        style={{
+                          fontSize: 13,
+                          color: "#6b7f94",
+                          lineHeight: 1.8,
+                        }}
+                      >
+                        {tip}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+              <Section title="Mistakes to Avoid" icon="⚠️" accent="#f87171">
+                {roadmap.mistakes.map((m, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "flex-start",
+                      fontSize: 14,
+                      color: "#6b7f94",
+                      padding: "14px 18px",
+                      background: "rgba(248,113,113,.04)",
+                      border: "1px solid rgba(248,113,113,.12)",
+                      borderRadius: 12,
+                      marginBottom: 8,
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    <span
+                      style={{ color: "#f87171", flexShrink: 0, marginTop: 1 }}
+                    >
+                      ✗
+                    </span>
+                    <span>{m}</span>
+                  </div>
+                ))}
+              </Section>
+            </>
+          )}
+        </div>
+
+        {/* ═══ BOTTOM BAR ═══ */}
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: "rgba(6,14,26,.92)",
+            backdropFilter: "blur(16px)",
+            borderTop: "1px solid rgba(255,255,255,.07)",
+            padding: "14px 24px",
+            zIndex: 100,
+            display: "flex",
+            justifyContent: "center",
+            gap: 12,
+          }}
+        >
+          <button
+            onClick={onRestart}
+            style={{
+              padding: "11px 22px",
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 11,
+              color: "#6b7f94",
+              fontFamily: "'Sora',sans-serif",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            ← Restart
+          </button>
+          <button
+            onClick={() => setChatOpen(true)}
+            style={{
+              padding: "11px 24px",
+              background: "linear-gradient(135deg,#00d2ff,#6366f1)",
+              border: "none",
+              borderRadius: 11,
+              color: "#fff",
+              fontFamily: "'Sora',sans-serif",
+              fontWeight: 700,
+              fontSize: 13,
+              cursor: "pointer",
+              boxShadow: "0 4px 20px rgba(0,210,255,.25)",
+            }}
+          >
+            💬 Ask AI Counselor
+          </button>
+          <button
+            onClick={() => window.print?.()}
+            style={{
+              padding: "11px 22px",
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 11,
+              color: "#6b7f94",
+              fontFamily: "'Sora',sans-serif",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            ↓ Save Report
+          </button>
+        </div>
+
+        {/* ═══ CHAT DRAWER ═══ */}
+        {chatOpen && (
+          <div
+            onClick={(e) => e.target === e.currentTarget && setChatOpen(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,.75)",
+              zIndex: 9999,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "flex-end",
+              padding: 20,
+              backdropFilter: "blur(10px)",
+              animation: "fadeIn .2s ease",
+            }}
+          >
+            <div
+              style={{
+                width: "min(430px,100%)",
+                height: "min(600px,92vh)",
+                background: "#080f1c",
+                border: "1px solid rgba(255,255,255,.1)",
+                borderRadius: 22,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                boxShadow:
+                  "0 32px 100px rgba(0,0,0,.7),0 0 0 1px rgba(0,210,255,.08)",
+              }}
+            >
+              <div
+                style={{
+                  padding: "17px 20px",
+                  borderBottom: "1px solid rgba(255,255,255,.07)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  background: "rgba(0,210,255,.04)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: "linear-gradient(135deg,#00d2ff,#6366f1)",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: 18,
+                    }}
+                  >
+                    🤖
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 14 }}>
+                      AI Career Counselor
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "'DM Mono',monospace",
+                        fontSize: 10,
+                        color: "#00d2ff",
+                        marginTop: 2,
+                      }}
+                    >
+                      <span
+                        style={{
+                          animation: "glowPulse 2s infinite",
+                          display: "inline-block",
+                        }}
+                      >
+                        ●
+                      </span>{" "}
+                      Online · Knows your full profile
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setChatOpen(false)}
+                  style={{
+                    background: "none",
+                    border: "1px solid rgba(255,255,255,.1)",
+                    borderRadius: 8,
+                    width: 30,
+                    height: 30,
+                    display: "grid",
+                    placeItems: "center",
+                    cursor: "pointer",
+                    color: "#6b7f94",
+                    fontSize: 13,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding: 16,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                }}
+              >
+                {msgs.length === 0 && (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "36px 20px",
+                      color: "#445566",
+                      fontSize: 13,
+                      lineHeight: 1.85,
+                    }}
+                  >
+                    <div style={{ fontSize: 38, marginBottom: 12 }}>👋</div>
+                    <p>
+                      Hi{" "}
+                      <b style={{ color: "#ccdde8" }}>
+                        {student.name.split(" ")[0]}
+                      </b>
+                      !<br />
+                      I've read your full career report. Ask me anything!
+                    </p>
+                  </div>
+                )}
+                {msgs.map((m, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent:
+                        m.role === "user" ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: "84%",
+                        padding: "11px 15px",
+                        borderRadius: 16,
+                        fontSize: 13,
+                        lineHeight: 1.7,
+                        whiteSpace: "pre-wrap",
+                        ...(m.role === "user"
+                          ? {
+                              background:
+                                "linear-gradient(135deg,#00d2ff,#6366f1)",
+                              color: "#fff",
+                              borderRadius: "16px 16px 4px 16px",
+                              fontWeight: 500,
+                            }
+                          : {
+                              background: "rgba(255,255,255,.06)",
+                              color: "#ccdde8",
+                              borderRadius: "16px 16px 16px 4px",
+                            }),
+                      }}
+                    >
+                      {m.content}
+                    </div>
+                  </div>
+                ))}
+                {chatLoad && (
+                  <div style={{ display: "flex" }}>
+                    <div
+                      style={{
+                        background: "rgba(255,255,255,.06)",
+                        padding: "12px 16px",
+                        borderRadius: "16px 16px 16px 4px",
+                        display: "flex",
+                        gap: 5,
+                        alignItems: "center",
+                      }}
+                    >
+                      {[0, 1, 2].map((n) => (
+                        <span
+                          key={n}
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: "50%",
+                            background: "#445566",
+                            display: "inline-block",
+                            animation: `dotPulse 1.4s ${n * 0.2}s infinite both`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+              <div
+                style={{
+                  padding: "12px 14px",
+                  borderTop: "1px solid rgba(255,255,255,.07)",
+                  display: "flex",
+                  gap: 10,
+                }}
+              >
+                <input
+                  value={chatInp}
+                  onChange={(e) => setChatInp(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendChat()}
+                  placeholder="What should I do first this week?"
+                  style={{
+                    flex: 1,
+                    background: "rgba(255,255,255,.06)",
+                    border: "1px solid rgba(255,255,255,.1)",
+                    borderRadius: 12,
+                    padding: "11px 15px",
+                    color: "#ccdde8",
+                    fontFamily: "'Sora',sans-serif",
+                    fontSize: 13,
+                    outline: "none",
+                  }}
+                />
+                <button
+                  onClick={sendChat}
+                  disabled={!chatInp.trim() || chatLoad}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 11,
+                    background: "linear-gradient(135deg,#00d2ff,#6366f1)",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
+                    opacity: !chatInp.trim() || chatLoad ? 0.4 : 1,
+                  }}
+                >
+                  ↑
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

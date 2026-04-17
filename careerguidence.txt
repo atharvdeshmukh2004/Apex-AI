@@ -1,0 +1,2211 @@
+import { useState, useRef, useEffect } from "react";
+
+/* ── demo data ── */
+const DEMO_MATCH = {
+  predictions: [
+    {
+      career_cluster: "Software & Technology",
+      confidence: 72.4,
+      match_strength: "Excellent Match",
+    },
+    {
+      career_cluster: "Data Science & AI",
+      confidence: 51.2,
+      match_strength: "Strong Match",
+    },
+    {
+      career_cluster: "Engineering & Manufacturing",
+      confidence: 31.8,
+      match_strength: "Good Match",
+    },
+  ],
+  key_factors: [
+    { factor: "interest_technology", weight: 18.2 },
+    { factor: "skill_coding", weight: 14.5 },
+    { factor: "soft_analytical", weight: 12.1 },
+    { factor: "academic_score", weight: 9.8 },
+    { factor: "stream_Engineering", weight: 8.3 },
+  ],
+  similar_students_count: 248,
+};
+
+const DEMO_ROADMAP = {
+  careerTitle: "Software & Technology — Personalized Roadmap",
+  summary:
+    "Based on your Science background and strong coding interest, you're well-positioned for a software engineering career.",
+  totalDuration: "18–24 months",
+  difficulty: "Moderate",
+  phases: [
+    {
+      title: "Build Core Foundations",
+      duration: "Month 1–4",
+      description:
+        "Solidify your programming fundamentals and computer science basics.",
+      skills: [
+        "Python / JavaScript",
+        "Data Structures",
+        "Algorithms",
+        "Git & GitHub",
+      ],
+      resources: [
+        {
+          name: "CS50 — Introduction to Computer Science",
+          platform: "Harvard/edX",
+          free: true,
+        },
+        { name: "The Odin Project", platform: "Web", free: true },
+        { name: "LeetCode Easy Problems", platform: "LeetCode", free: true },
+      ],
+      milestones: ["Complete 50 coding problems", "Build 2 small projects"],
+      projects: ["Personal portfolio website", "CLI to-do app"],
+    },
+    {
+      title: "Specialize & Go Deep",
+      duration: "Month 5–10",
+      description:
+        "Pick a specialization — full stack, mobile, or backend — and go deep.",
+      skills: ["React / Node.js", "SQL + NoSQL", "REST APIs", "Docker basics"],
+      resources: [
+        { name: "Full Stack Open", platform: "Univ. of Helsinki", free: true },
+        { name: "MongoDB University", platform: "MongoDB", free: true },
+        { name: "System Design Primer", platform: "GitHub", free: true },
+      ],
+      milestones: [
+        "Launch 1 full-stack project",
+        "First open-source PR merged",
+      ],
+      projects: ["Full-stack e-commerce app", "Open-source contribution"],
+    },
+    {
+      title: "Internship & Real Experience",
+      duration: "Month 11–16",
+      description:
+        "Apply for internships and build a strong professional network.",
+      skills: [
+        "Agile/Scrum",
+        "Code Review",
+        "Team Collaboration",
+        "Communication",
+      ],
+      resources: [
+        { name: "Internshala", platform: "Internshala", free: true },
+        { name: "LinkedIn Learning", platform: "LinkedIn", free: false },
+      ],
+      milestones: ["Land 1 paid internship", "LinkedIn 200+ connections"],
+      projects: ["Internship capstone project", "2 technical blog posts"],
+    },
+    {
+      title: "Job-Ready Preparation",
+      duration: "Month 17–24",
+      description: "Crack technical interviews at top companies.",
+      skills: ["System Design", "Behavioral Interviews", "DSA", "Negotiation"],
+      resources: [
+        {
+          name: "Cracking the Coding Interview",
+          platform: "Book",
+          free: false,
+        },
+        { name: "Pramp — Mock Interviews", platform: "Pramp", free: true },
+        { name: "Naukri / LinkedIn Jobs", platform: "Job Portal", free: true },
+      ],
+      milestones: ["200 LeetCode problems done", "5+ job offers received"],
+      projects: ["Capstone SaaS project", "System design walkthrough video"],
+    },
+  ],
+  careerPaths: [
+    {
+      role: "Junior Software Engineer",
+      salary_range: "₹4–8 LPA",
+      companies: ["TCS", "Infosys", "Wipro", "Startups"],
+      growth: "→ SE → Senior SE → Tech Lead",
+    },
+    {
+      role: "Full Stack Developer",
+      salary_range: "₹6–15 LPA",
+      companies: ["Razorpay", "Zepto", "Zomato", "Startups"],
+      growth: "→ Senior Dev → Eng Manager",
+    },
+    {
+      role: "Product Engineer",
+      salary_range: "₹12–25 LPA",
+      companies: ["Flipkart", "Swiggy", "CRED", "Dream11"],
+      growth: "→ Staff → Principal Engineer",
+    },
+  ],
+  entranceExams: [
+    { name: "GATE", forWhat: "M.Tech / PSU Jobs", difficulty: "Hard" },
+    {
+      name: "AMCAT / CoCubes",
+      forWhat: "Campus placements at 500+ companies",
+      difficulty: "Easy",
+    },
+    {
+      name: "Google / MS Hiring",
+      forWhat: "Big Tech Jobs",
+      difficulty: "Hard",
+    },
+  ],
+  topColleges: [
+    {
+      name: "IIT Bombay",
+      location: "Mumbai",
+      program: "M.Tech CSE",
+      ranking: "#1 in India",
+    },
+    {
+      name: "BITS Pilani",
+      location: "Rajasthan",
+      program: "M.E. Software Systems",
+      ranking: "Top 10",
+    },
+    {
+      name: "IIIT Hyderabad",
+      location: "Hyderabad",
+      program: "M.Tech CS",
+      ranking: "Top 5 for CS",
+    },
+  ],
+  proTips: [
+    "Build in public — share projects on LinkedIn/Twitter from Day 1",
+    "3 great projects beat 20 mediocre ones on your resume",
+    "Join coding communities: Discord, meetups, hackathons",
+    "Communication skills are a massive career multiplier",
+    "Apply to 5× more jobs than you think you need to",
+  ],
+  commonMistakes: [
+    "Tutorial hell — watching courses without building real projects",
+    "Waiting until 'ready' to apply — start early, learn from rejections",
+    "Ignoring DSA — 90% of tech interviews test algorithms",
+  ],
+  successStory: {
+    name: "Arjun Mehta",
+    background: "Science student from Pune, similar profile to yours",
+    journey:
+      "Started coding in 12th grade, built 3 projects during gap year, landed Razorpay internship, converted to full-time at ₹18 LPA",
+    currentRole: "Software Engineer at Razorpay (₹18 LPA)",
+  },
+};
+
+const STREAMS = {
+  10: ["Science", "Commerce", "Arts", "General"],
+  12: ["Science (PCM)", "Science (PCB)", "Commerce", "Arts/Humanities"],
+  UG: [
+    "Engineering/Technology",
+    "Medicine/Healthcare",
+    "Commerce/BBA",
+    "Arts/BA",
+    "Science/BSc",
+    "Law",
+    "Design",
+    "Other",
+  ],
+  PG: [
+    "Engineering/MTech",
+    "Management/MBA",
+    "Medicine/MD",
+    "Arts/MA",
+    "Science/MSc",
+    "Law/LLM",
+    "Other",
+  ],
+};
+const INTERESTS = [
+  { id: "technology", label: "Technology", emoji: "💻" },
+  { id: "design", label: "Design", emoji: "🎨" },
+  { id: "business", label: "Business", emoji: "📈" },
+  { id: "healthcare", label: "Healthcare", emoji: "🏥" },
+  { id: "finance", label: "Finance", emoji: "💰" },
+  { id: "law", label: "Law", emoji: "⚖️" },
+  { id: "education", label: "Teaching", emoji: "📖" },
+  { id: "research", label: "Research", emoji: "🔬" },
+  { id: "arts", label: "Arts", emoji: "🎭" },
+  { id: "media", label: "Media", emoji: "📺" },
+  { id: "sports", label: "Sports", emoji: "⚽" },
+  { id: "environment", label: "Environment", emoji: "🌿" },
+  { id: "social", label: "Social Work", emoji: "🤝" },
+  { id: "government", label: "Government", emoji: "🏛️" },
+
+];
+const TECH_SKILLS = [
+  { id: "coding", label: "Coding" },
+  { id: "math", label: "Mathematics" },
+  { id: "writing", label: "Writing" },
+  { id: "drawing", label: "Drawing/Design" },
+  { id: "speaking", label: "Public Speaking" },
+  { id: "data", label: "Data Analysis" },
+  { id: "pm", label: "Project Mgmt" },
+  { id: "research", label: "Research" },
+  { id: "teaching", label: "Teaching" },
+  { id: "marketing", label: "Marketing" },
+];
+const CLUSTER_EMOJI = {
+  "Software & Technology": "💻",
+  "Data Science & AI": "🤖",
+  "Design & Creative": "🎨",
+  "Business & Management": "📈",
+  "Healthcare & Medicine": "🏥",
+  "Finance & Economics": "💰",
+  "Law & Public Policy": "⚖️",
+  "Education & Research": "📚",
+  "Engineering & Manufacturing": "⚙️",
+  "Media & Communication": "📡",
+  "Entrepreneurship & Startups": "🚀",
+  "Social Work & NGO": "🤝",
+  "Government & Civil Services": "🏛️",
+  "Arts & Humanities": "🎭",
+  "Agriculture & Environment": "🌿",
+};
+const PHASE_COLORS = ["#22d3ee", "#a78bfa", "#f472b6", "#fb923c", "#4ade80"];
+const ACCENT_COLORS = ["#22d3ee", "#a78bfa", "#f472b6"];
+
+/* ── shared tiny components ── */
+function Pill({ children, color = "#22d3ee" }) {
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        padding: "3px 10px",
+        borderRadius: 999,
+        border: `1px solid ${color}55`,
+        color,
+        fontSize: 11,
+        fontFamily: "monospace",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function AnimBar({ label, value, color, delay = 0 }) {
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setW(value), 150 + delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 4,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 11,
+            color: "#94a3b8",
+            textTransform: "capitalize",
+          }}
+        >
+          {label.replace(/_/g, " ")}
+        </span>
+        <span style={{ fontSize: 11, color, fontFamily: "monospace" }}>
+          {value}%
+        </span>
+      </div>
+      <div
+        style={{
+          height: 5,
+          borderRadius: 99,
+          background: "rgba(255,255,255,.07)",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${w}%`,
+            borderRadius: 99,
+            background: color,
+            transition: "width 1s ease",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════
+   SCREEN 1 – PROFILE FORM
+═══════════════════════════════════ */
+const FORM_STEPS = ["Academic", "Interests", "Skills", "Preferences"];
+
+function ProfileForm({ onSubmit, loading }) {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState({
+    name: "",
+    education_level: "12",
+    stream: "",
+    percentage_score: 75,
+    top_interests: [],
+    technical_skills: [],
+    soft_skills: {
+      communication: 3,
+      leadership: 3,
+      teamwork: 3,
+      analytical: 3,
+      creative: 3,
+    },
+    learning_style: "hands-on",
+    work_preference: "office",
+    risk_appetite: "medium",
+    location_preference: "national",
+    aspirations: "",
+  });
+
+  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const toggle = (k, v) =>
+    set(
+      k,
+      form[k].includes(v) ? form[k].filter((x) => x !== v) : [...form[k], v],
+    );
+  const setSoft = (k, v) => set("soft_skills", { ...form.soft_skills, [k]: v });
+  const canNext =
+    step === 0
+      ? !!(form.name && form.stream)
+      : step === 1
+        ? form.top_interests.length >= 2
+        : true;
+
+  return (
+    <div
+      style={{
+        // width: "100%",
+        // maxWidth: 700,
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: "0 0 0px",
+      }}
+    >
+      {/* stepper */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 24,
+          overflowX: "auto",
+          paddingBottom: 4,
+        }}
+      >
+        {FORM_STEPS.map((s, i) => (
+          <div
+            key={i}
+            style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
+          >
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                display: "grid",
+                placeItems: "center",
+                fontSize: 11,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                flexShrink: 0,
+                background: i < step ? "#22d3ee" : "transparent",
+                border: `1.5px solid ${i <= step ? "#22d3ee" : "rgba(255,255,255,.12)"}`,
+                color: i < step ? "#000" : i === step ? "#22d3ee" : "#64748b",
+              }}
+            >
+              {i < step ? "✓" : i + 1}
+            </div>
+            <span
+              style={{
+                fontSize: 12,
+                color: i === step ? "#e2e8f0" : "#64748b",
+                margin: "0 8px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {s}
+            </span>
+            {i < FORM_STEPS.length - 1 && (
+              <div
+                style={{
+                  width: 24,
+                  height: 1,
+                  background:
+                    i < step ? "rgba(34,211,238,.4)" : "rgba(255,255,255,.08)",
+                  marginRight: 8,
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* card */}
+      <div key={step} style={S.card}>
+        {/* STEP 0 – ACADEMIC */}
+        {step === 0 && (
+          <>
+            <h2 style={S.cardTitle}>Tell us about yourself</h2>
+            <p style={S.cardSub}>
+              Your academic background helps calibrate the ML model.
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 16,
+                marginBottom: 18,
+              }}
+            >
+              <div>
+                <div style={S.label}>Full Name *</div>
+                <input
+                  style={S.input}
+                  placeholder="e.g. Priya Sharma"
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                />
+              </div>
+              <div>
+                <div style={S.label}>
+                  Score:{" "}
+                  <b style={{ color: "#22d3ee" }}>{form.percentage_score}%</b>
+                </div>
+                <input
+                  type="range"
+                  min="30"
+                  max="100"
+                  value={form.percentage_score}
+                  onChange={(e) => set("percentage_score", +e.target.value)}
+                  style={{
+                    width: "100%",
+                    accentColor: "#22d3ee",
+                    marginTop: 10,
+                    cursor: "pointer",
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: 18 }}>
+              <div style={S.label}>Education Level *</div>
+              <div style={S.chipRow}>
+                {["10", "12", "UG", "PG"].map((l) => (
+                  <button
+                    key={l}
+                    style={S.chip(form.education_level === l)}
+                    onClick={() => {
+                      set("education_level", l);
+                      set("stream", "");
+                    }}
+                  >
+                    {
+                      {
+                        10: "Class 10",
+                        12: "Class 12",
+                        UG: "Under Graduate",
+                        PG: "Post Graduate",
+                      }[l]
+                    }
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={S.label}>Stream / Branch *</div>
+              <div style={S.chipRow}>
+                {(STREAMS[form.education_level] || []).map((s) => (
+                  <button
+                    key={s}
+                    style={S.chip(form.stream === s)}
+                    onClick={() => set("stream", s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* STEP 1 – INTERESTS */}
+        {step === 1 && (
+          <>
+            <h2 style={S.cardTitle}>What excites you? ✨</h2>
+            <p style={S.cardSub}>
+              Pick at least 2 areas you're genuinely interested in.
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill,minmax(106px,1fr))",
+                gap: 8,
+              }}
+            >
+              {INTERESTS.map((o) => {
+                const on = form.top_interests.includes(o.id);
+                return (
+                  <button
+                    key={o.id}
+                    onClick={() => toggle("top_interests", o.id)}
+                    style={{
+                      padding: "12px 6px",
+                      borderRadius: 12,
+                      cursor: "pointer",
+                      border: `1px solid ${on ? "rgba(34,211,238,.6)" : "rgba(255,255,255,.07)"}`,
+                      background: on ? "rgba(34,211,238,.08)" : "#111827",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                      position: "relative",
+                      transition: "all .15s",
+                    }}
+                  >
+                    <span style={{ fontSize: 22 }}>{o.emoji}</span>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: on ? "#67e8f9" : "#64748b",
+                        textAlign: "center",
+                      }}
+                    >
+                      {o.label}
+                    </span>
+                    {on && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 5,
+                          right: 5,
+                          width: 16,
+                          height: 16,
+                          borderRadius: "50%",
+                          background: "#22d3ee",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: 9,
+                          color: "#000",
+                          fontWeight: 700,
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <p
+              style={{
+                fontSize: 11,
+                color: "#475569",
+                marginTop: 10,
+                fontFamily: "monospace",
+              }}
+            >
+              {form.top_interests.length}/14 selected (min 2)
+            </p>
+          </>
+        )}
+
+        {/* STEP 2 – SKILLS */}
+        {step === 2 && (
+          <>
+            <h2 style={S.cardTitle}>Your Skills</h2>
+            <p style={S.cardSub}>
+              Rate your soft skills and pick your technical strengths.
+            </p>
+            <div style={S.label}>Soft Skills (1 = Beginner → 5 = Expert)</div>
+            {Object.entries(form.soft_skills).map(([sk, val]) => (
+              <div
+                key={sk}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  marginBottom: 10,
+                }}
+              >
+                <span
+                  style={{
+                    width: 110,
+                    fontSize: 13,
+                    color: "#94a3b8",
+                    textTransform: "capitalize",
+                    flexShrink: 0,
+                  }}
+                >
+                  {sk}
+                </span>
+                <div style={{ display: "flex", gap: 5 }}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setSoft(sk, n)}
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 7,
+                        cursor: "pointer",
+                        border: `1px solid ${n <= val ? "#22d3ee" : "rgba(255,255,255,.1)"}`,
+                        background:
+                          n <= val ? "rgba(34,211,238,.15)" : "transparent",
+                        color: n <= val ? "#22d3ee" : "#475569",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        transition: "all .12s",
+                      }}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: 18 }}>
+              <div style={S.label}>Technical Skills</div>
+              <div style={S.chipRow}>
+                {TECH_SKILLS.map((s) => (
+                  <button
+                    key={s.id}
+                    style={S.chip(form.technical_skills.includes(s.id))}
+                    onClick={() => toggle("technical_skills", s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* STEP 3 – PREFERENCES */}
+        {step === 3 && (
+          <>
+            <h2 style={S.cardTitle}>Work Style & Goals</h2>
+            <p style={S.cardSub}>
+              Help us understand how and where you want to work.
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 18,
+                marginBottom: 16,
+              }}
+            >
+              {[
+                {
+                  label: "Learning Style",
+                  key: "learning_style",
+                  opts: [
+                    ["visual", "👁 Visual"],
+                    ["reading", "📖 Reading"],
+                    ["hands-on", "🔧 Hands-on"],
+                    ["auditory", "🎧 Auditory"],
+                  ],
+                },
+                {
+                  label: "Work Preference",
+                  key: "work_preference",
+                  opts: [
+                    ["remote", "💻 Remote"],
+                    ["office", "🏢 Office"],
+                    ["fieldwork", "🌍 Fieldwork"],
+                    ["lab", "🔬 Lab"],
+                  ],
+                },
+                {
+                  label: "Risk Appetite",
+                  key: "risk_appetite",
+                  opts: [
+                    ["low", "🛡 Play Safe"],
+                    ["medium", "⚖️ Balanced"],
+                    ["high", "🚀 High Risk"],
+                  ],
+                },
+                {
+                  label: "Location",
+                  key: "location_preference",
+                  opts: [
+                    ["local", "🏠 My City"],
+                    ["national", "🇮🇳 India"],
+                    ["international", "✈️ Global"],
+                  ],
+                },
+              ].map((row) => (
+                <div key={row.key}>
+                  <div style={S.label}>{row.label}</div>
+                  <div style={S.chipRow}>
+                    {row.opts.map(([v, l]) => (
+                      <button
+                        key={v}
+                        style={S.chip(form[row.key] === v)}
+                        onClick={() => set(row.key, v)}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={S.label}>Aspirations (optional)</div>
+            <textarea
+              style={{ ...S.input, resize: "vertical" }}
+              rows={3}
+              placeholder="e.g. I want to build my own startup someday..."
+              value={form.aspirations}
+              onChange={(e) => set("aspirations", e.target.value)}
+            />
+          </>
+        )}
+      </div>
+
+      {/* nav */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        {step > 0 ? (
+          <button style={S.btnGhost} onClick={() => setStep((s) => s - 1)}>
+            ← Back
+          </button>
+        ) : (
+          <div />
+        )}
+        {step < FORM_STEPS.length - 1 ? (
+          <button
+            style={{ ...S.btnPrimary, opacity: canNext ? 1 : 0.38 }}
+            disabled={!canNext}
+            onClick={() => setStep((s) => s + 1)}
+          >
+            Continue →
+          </button>
+        ) : (
+          <button
+            style={{ ...S.btnPrimary, opacity: loading ? 0.5 : 1 }}
+            disabled={loading}
+            onClick={() => onSubmit(form)}
+          >
+            {loading ? "Analyzing..." : "🔮 Find My Career Match"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════
+   SCREEN 2 – MATCH RESULTS
+═══════════════════════════════════ */
+function MatchResults({ studentName, matchData, onSelectCareer, loading }) {
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 700,
+        margin: "0 auto",
+        padding: "0 0 60px",
+      }}
+    >
+      <div style={{ marginBottom: 24 }}>
+        <div style={S.eyebrow}>ML ANALYSIS COMPLETE</div>
+        <h1 style={S.pageTitle}>Your Matches, {studentName.split(" ")[0]}</h1>
+        <p style={S.pageSub}>
+          Analyzed against{" "}
+          <b style={{ color: "#e2e8f0" }}>
+            {matchData.similar_students_count}+
+          </b>{" "}
+          similar student profiles using Random Forest.
+        </p>
+      </div>
+
+      {/* factors — only shown if model returns key_factors */}
+      {matchData.key_factors && matchData.key_factors.length > 0 && (
+        <div style={{ ...S.card, marginBottom: 16 }}>
+          <div
+            style={{
+              fontFamily: "'Cabinet Grotesk',sans-serif",
+              fontWeight: 700,
+              fontSize: 15,
+              marginBottom: 14,
+            }}
+          >
+            🧠 What drove your match
+          </div>
+          {matchData.key_factors.map((f, i) => (
+            <AnimBar
+              key={i}
+              label={f.factor}
+              value={f.weight}
+              color={ACCENT_COLORS[i % ACCENT_COLORS.length]}
+              delay={i * 80}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* predictions */}
+      <div style={S.eyebrow}>Select a career to continue</div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          margin: "12px 0 20px",
+        }}
+      >
+        {matchData.predictions.map((p, i) => {
+          const sel = selected === p.career_cluster;
+          const top = i === 0;
+          return (
+            <div
+              key={i}
+              onClick={() => setSelected(p.career_cluster)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "16px 18px",
+                borderRadius: 14,
+                cursor: "pointer",
+                position: "relative",
+                overflow: "hidden",
+                transition: "all .15s",
+                background: sel ? "rgba(34,211,238,.05)" : "#0c1120",
+                border: `1px solid ${sel ? "rgba(34,211,238,.6)" : top ? "rgba(34,211,238,.2)" : "rgba(255,255,255,.07)"}`,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 11,
+                  color: ACCENT_COLORS[i],
+                  minWidth: 22,
+                  fontWeight: 700,
+                }}
+              >
+                #{i + 1}
+              </span>
+              <span style={{ fontSize: 24, flexShrink: 0 }}>
+                {CLUSTER_EMOJI[p.career_cluster] || "🎯"}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    marginBottom: 3,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {p.career_cluster}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "monospace",
+                    fontSize: 10,
+                    color: ACCENT_COLORS[i],
+                  }}
+                >
+                  {p.match_strength}
+                </div>
+              </div>
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  fontSize: 22,
+                  color: ACCENT_COLORS[i],
+                  flexShrink: 0,
+                }}
+              >
+                {p.confidence}%
+              </div>
+              {top && (
+                <span style={{ position: "absolute", top: 10, right: 12 }}>
+                  👑
+                </span>
+              )}
+              {sel && (
+                <span
+                  style={{
+                    position: "absolute",
+                    bottom: 8,
+                    right: 12,
+                    fontFamily: "monospace",
+                    fontSize: 10,
+                    color: "#22d3ee",
+                    background: "rgba(34,211,238,.1)",
+                    border: "1px solid rgba(34,211,238,.25)",
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                  }}
+                >
+                  Selected ✓
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <button
+        style={{
+          ...S.btnPrimary,
+          width: "100%",
+          opacity: !selected || loading ? 0.4 : 1,
+        }}
+        disabled={!selected || loading}
+        onClick={() => onSelectCareer(selected)}
+      >
+        {loading
+          ? "Generating Roadmap..."
+          : selected
+            ? `Generate Roadmap for "${selected}" →`
+            : "Select a career above"}
+      </button>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════
+   SCREEN 3 – ROADMAP
+═══════════════════════════════════ */
+function RoadmapView({ student, roadmap, onReset }) {
+  const [tab, setTab] = useState("roadmap");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [msgs, setMsgs] = useState([]);
+  const [inp, setInp] = useState("");
+  const [chatLoad, setChatLoad] = useState(false);
+  const endRef = useRef(null);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs]);
+
+  const send = async () => {
+    if (!inp.trim()) return;
+    const um = { role: "user", content: inp };
+    setMsgs((m) => [...m, um]);
+    setInp("");
+    setChatLoad(true);
+    await new Promise((r) => setTimeout(r, 1200));
+    setMsgs((m) => [
+      ...m,
+      {
+        role: "assistant",
+        content: `Great question! For ${roadmap.careerTitle.split("—")[0].trim()}, here's my advice:\n\n• Focus on building real projects over tutorials\n• Join communities in your field\n• Set 30-day milestones to stay on track\n\nWant me to go deeper on any of these?`,
+      },
+    ]);
+    setChatLoad(false);
+  };
+
+  const TABS = [
+    { id: "roadmap", label: "🗺 Roadmap" },
+    { id: "careers", label: "💼 Careers & Salaries" },
+    { id: "colleges", label: "🏛 Colleges & Exams" },
+    { id: "insights", label: "💡 Tips & Insights" },
+  ];
+
+  const diffStyle = (d) =>
+    ({
+      Hard: {
+        color: "#f87171",
+        borderColor: "rgba(248,113,113,.3)",
+        background: "rgba(248,113,113,.08)",
+      },
+      Medium: {
+        color: "#f59e0b",
+        borderColor: "rgba(245,158,11,.3)",
+        background: "rgba(245,158,11,.08)",
+      },
+      Easy: {
+        color: "#4ade80",
+        borderColor: "rgba(74,222,128,.3)",
+        background: "rgba(74,222,128,.08)",
+      },
+    })[d] || {};
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 740,
+        margin: "0 auto",
+        padding: "0 0 100px",
+        position: "relative",
+      }}
+    >
+      {/* header */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={S.eyebrow}>YOUR PERSONALIZED ROADMAP</div>
+        <h1 style={S.pageTitle}>{roadmap.careerTitle}</h1>
+        <p style={S.pageSub}>{roadmap.summary}</p>
+        <div
+          style={{
+            display: "inline-flex",
+            gap: 20,
+            background: "#0c1120",
+            border: "1px solid rgba(255,255,255,.07)",
+            borderRadius: 13,
+            padding: "13px 22px",
+            marginTop: 14,
+          }}
+        >
+          {[
+            ["Timeline", roadmap.totalDuration],
+            ["Phases", roadmap.phases?.length],
+            ["Difficulty", roadmap.difficulty],
+          ].map(([l, v]) => (
+            <div
+              key={l}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 3,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Cabinet Grotesk',sans-serif",
+                  fontWeight: 800,
+                  fontSize: 16,
+                }}
+              >
+                {v}
+              </span>
+              <span
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 9,
+                  color: "#64748b",
+                  letterSpacing: ".08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {l}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* tab bar */}
+      <div
+        style={{
+          display: "flex",
+          gap: 3,
+          background: "#0c1120",
+          border: "1px solid rgba(255,255,255,.07)",
+          borderRadius: 12,
+          padding: 4,
+          marginBottom: 22,
+          overflowX: "auto",
+        }}
+      >
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            style={{
+              flex: 1,
+              padding: "9px 12px",
+              border: "none",
+              borderRadius: 9,
+              cursor: "pointer",
+              background: tab === t.id ? "#111827" : "transparent",
+              color: tab === t.id ? "#e2e8f0" : "#64748b",
+              fontFamily: "'Outfit',sans-serif",
+              fontSize: 13,
+              transition: "all .13s",
+              whiteSpace: "nowrap",
+              minWidth: "fit-content",
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── ROADMAP ── */}
+      {tab === "roadmap" &&
+        roadmap.phases?.map((ph, i) => {
+          const c = PHASE_COLORS[i % PHASE_COLORS.length];
+          return (
+            <div key={i} style={{ display: "flex", gap: 16 }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  paddingTop: 3,
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: c,
+                    display: "grid",
+                    placeItems: "center",
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: "#000",
+                    flexShrink: 0,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                {i < roadmap.phases.length - 1 && (
+                  <div
+                    style={{
+                      width: 2,
+                      flex: 1,
+                      minHeight: 32,
+                      borderRadius: 99,
+                      background: c + "35",
+                      margin: "7px 0",
+                    }}
+                  />
+                )}
+              </div>
+              <div style={{ flex: 1, paddingBottom: 26, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontFamily: "monospace",
+                    fontSize: 10,
+                    color: c,
+                    letterSpacing: ".07em",
+                    marginBottom: 4,
+                  }}
+                >
+                  {ph.duration}
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                    fontWeight: 800,
+                    fontSize: 18,
+                    letterSpacing: "-.02em",
+                    marginBottom: 8,
+                  }}
+                >
+                  {ph.title}
+                </h3>
+                <p
+                  style={{
+                    color: "#64748b",
+                    fontSize: 13,
+                    lineHeight: 1.7,
+                    marginBottom: 14,
+                  }}
+                >
+                  {ph.description}
+                </p>
+                <div
+                  style={{
+                    background: "#0c1120",
+                    border: "1px solid rgba(255,255,255,.07)",
+                    borderRadius: 13,
+                    padding: 16,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 14,
+                  }}
+                >
+                  <div>
+                    <div style={S.psHead}>🎯 Skills</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                      {ph.skills?.map((s, j) => (
+                        <Pill key={j} color={c}>
+                          {s}
+                        </Pill>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={S.psHead}>📚 Resources</div>
+                    {ph.resources?.map((r, j) => (
+                      <div
+                        key={j}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          fontSize: 12,
+                          padding: "5px 0",
+                          borderBottom:
+                            j < ph.resources.length - 1
+                              ? "1px solid rgba(255,255,255,.05)"
+                              : "none",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "monospace",
+                            fontSize: 8,
+                            padding: "2px 6px",
+                            borderRadius: 999,
+                            border: "1px solid",
+                            flexShrink: 0,
+                            ...(r.free
+                              ? {
+                                  color: "#4ade80",
+                                  borderColor: "rgba(74,222,128,.3)",
+                                  background: "rgba(74,222,128,.08)",
+                                }
+                              : {
+                                  color: "#f59e0b",
+                                  borderColor: "rgba(245,158,11,.3)",
+                                  background: "rgba(245,158,11,.08)",
+                                }),
+                          }}
+                        >
+                          {r.free ? "FREE" : "PAID"}
+                        </span>
+                        <span style={{ flex: 1, color: "#e2e8f0" }}>
+                          {r.name}
+                        </span>
+                        <span style={{ color: "#64748b", fontSize: 11 }}>
+                          {r.platform}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <div style={S.psHead}>✅ Milestones</div>
+                    {ph.milestones?.map((m, j) => (
+                      <div
+                        key={j}
+                        style={{
+                          fontSize: 13,
+                          color: "#64748b",
+                          padding: "3px 0",
+                          display: "flex",
+                          gap: 7,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        <span style={{ color: c, flexShrink: 0 }}>◆</span>
+                        {m}
+                      </div>
+                    ))}
+                  </div>
+                  {ph.projects?.length > 0 && (
+                    <div>
+                      <div style={S.psHead}>🛠 Projects to Build</div>
+                      {ph.projects.map((p, j) => (
+                        <div
+                          key={j}
+                          style={{
+                            fontSize: 13,
+                            color: "#64748b",
+                            padding: "3px 0",
+                            display: "flex",
+                            gap: 7,
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          <span style={{ color: "#fb923c", flexShrink: 0 }}>
+                            →
+                          </span>
+                          {p}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+      {/* ── CAREERS ── */}
+      {tab === "careers" && (
+        <div>
+          {roadmap.careerPaths?.map((cp, i) => (
+            <div key={i} style={{ ...S.card, marginBottom: 10 }}>
+              <div
+                style={{
+                  fontFamily: "'Cabinet Grotesk',sans-serif",
+                  fontWeight: 700,
+                  fontSize: 16,
+                  marginBottom: 5,
+                }}
+              >
+                {cp.role}
+              </div>
+              <div
+                style={{
+                  color: "#4ade80",
+                  fontFamily: "monospace",
+                  fontSize: 13,
+                  marginBottom: 5,
+                }}
+              >
+                {cp.salary_range}
+              </div>
+              <div style={{ color: "#64748b", fontSize: 12, marginBottom: 10 }}>
+                {cp.growth}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {cp.companies?.map((c, j) => (
+                  <span
+                    key={j}
+                    style={{
+                      fontSize: 11,
+                      padding: "3px 9px",
+                      borderRadius: 999,
+                      background: "rgba(255,255,255,.04)",
+                      border: "1px solid rgba(255,255,255,.08)",
+                      color: "#64748b",
+                    }}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          {roadmap.successStory && (
+            <div
+              style={{
+                background:
+                  "linear-gradient(135deg,rgba(167,139,250,.08),rgba(34,211,238,.08))",
+                border: "1px solid rgba(167,139,250,.2)",
+                borderRadius: 14,
+                padding: 20,
+                marginTop: 8,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 9,
+                  letterSpacing: ".1em",
+                  color: "#a78bfa",
+                  marginBottom: 10,
+                }}
+              >
+                ✨ SUCCESS STORY
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Cabinet Grotesk',sans-serif",
+                  fontWeight: 800,
+                  fontSize: 17,
+                  marginBottom: 5,
+                }}
+              >
+                {roadmap.successStory.name}
+              </div>
+              <p style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>
+                {roadmap.successStory.background}
+              </p>
+              <p style={{ fontSize: 13, lineHeight: 1.7, marginBottom: 10 }}>
+                {roadmap.successStory.journey}
+              </p>
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 12,
+                  color: "#4ade80",
+                }}
+              >
+                Now: {roadmap.successStory.currentRole}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── COLLEGES ── */}
+      {tab === "colleges" && (
+        <div>
+          <div
+            style={{
+              fontFamily: "'Cabinet Grotesk',sans-serif",
+              fontWeight: 700,
+              fontSize: 15,
+              marginBottom: 12,
+            }}
+          >
+            Entrance Exams
+          </div>
+          {roadmap.entranceExams?.map((e, i) => (
+            <div
+              key={i}
+              style={{
+                ...S.card,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    marginBottom: 3,
+                  }}
+                >
+                  {e.name}
+                </div>
+                <div style={{ fontSize: 12, color: "#64748b" }}>
+                  {e.forWhat}
+                </div>
+              </div>
+              <span
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 10,
+                  padding: "3px 10px",
+                  borderRadius: 999,
+                  border: "1px solid",
+                  ...diffStyle(e.difficulty),
+                }}
+              >
+                {e.difficulty}
+              </span>
+            </div>
+          ))}
+          <div
+            style={{
+              fontFamily: "'Cabinet Grotesk',sans-serif",
+              fontWeight: 700,
+              fontSize: 15,
+              margin: "20px 0 12px",
+            }}
+          >
+            Top Colleges
+          </div>
+          {roadmap.topColleges?.map((c, i) => (
+            <div
+              key={i}
+              style={{
+                ...S.card,
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                marginBottom: 8,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  color: "#22d3ee",
+                  fontSize: 20,
+                  minWidth: 28,
+                }}
+              >
+                #{i + 1}
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    marginBottom: 3,
+                  }}
+                >
+                  {c.name}
+                </div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>
+                  {c.program} · {c.location} · {c.ranking}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── INSIGHTS ── */}
+      {tab === "insights" && (
+        <div>
+          <div
+            style={{
+              fontFamily: "'Cabinet Grotesk',sans-serif",
+              fontWeight: 700,
+              fontSize: 15,
+              marginBottom: 12,
+            }}
+          >
+            🔥 Pro Tips
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))",
+              gap: 10,
+              marginBottom: 24,
+            }}
+          >
+            {roadmap.proTips?.map((tip, i) => (
+              <div key={i} style={{ ...S.card, display: "flex", gap: 12 }}>
+                <span
+                  style={{
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    fontSize: 20,
+                    color: "rgba(34,211,238,.25)",
+                    flexShrink: 0,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.7 }}>
+                  {tip}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              fontFamily: "'Cabinet Grotesk',sans-serif",
+              fontWeight: 700,
+              fontSize: 15,
+              marginBottom: 12,
+            }}
+          >
+            ⚠️ Mistakes to Avoid
+          </div>
+          {roadmap.commonMistakes?.map((m, i) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "flex-start",
+                fontSize: 13,
+                color: "#64748b",
+                padding: "10px 14px",
+                background: "rgba(248,113,113,.05)",
+                border: "1px solid rgba(248,113,113,.1)",
+                borderRadius: 10,
+                marginBottom: 8,
+                lineHeight: 1.6,
+              }}
+            >
+              <span style={{ color: "#f87171", flexShrink: 0 }}>✗</span>
+              {m}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* bottom actions */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 32,
+          gap: 10,
+          flexWrap: "wrap",
+        }}
+      >
+        <button style={S.btnGhost} onClick={onReset}>
+          ← Start Over
+        </button>
+        <button style={S.btnPrimary} onClick={() => setChatOpen(true)}>
+          💬 Ask AI Counselor
+        </button>
+      </div>
+
+      {/* ── CHAT DRAWER ── */}
+      {chatOpen && (
+        <div
+          onClick={(e) => e.target === e.currentTarget && setChatOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.65)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+            padding: 20,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            style={{
+              width: "min(400px,100%)",
+              height: "min(560px,90vh)",
+              background: "#0c1120",
+              border: "1px solid rgba(255,255,255,.09)",
+              borderRadius: 18,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                padding: "15px 18px",
+                borderBottom: "1px solid rgba(255,255,255,.07)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                background: "#111827",
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Cabinet Grotesk',sans-serif",
+                    fontWeight: 700,
+                    fontSize: 15,
+                  }}
+                >
+                  AI Career Counselor
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#22d3ee",
+                    fontFamily: "monospace",
+                  }}
+                >
+                  ● Online
+                </div>
+              </div>
+              <button
+                onClick={() => setChatOpen(false)}
+                style={{
+                  background: "none",
+                  border: "1px solid rgba(255,255,255,.12)",
+                  borderRadius: 7,
+                  width: 28,
+                  height: 28,
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                  color: "#64748b",
+                  fontSize: 12,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: 14,
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              {msgs.length === 0 && (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "28px 16px",
+                    color: "#64748b",
+                    fontSize: 13,
+                    lineHeight: 1.7,
+                  }}
+                >
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>🤖</div>
+                  <p>
+                    Hi {student?.name?.split(" ")[0] || "there"}! Ask me
+                    anything about your roadmap or what to do next.
+                  </p>
+                </div>
+              )}
+              {msgs.map((m, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      m.role === "user" ? "flex-end" : "flex-start",
+                  }}
+                >
+                  <div
+                    style={{
+                      maxWidth: "82%",
+                      padding: "10px 13px",
+                      borderRadius: 14,
+                      fontSize: 13,
+                      lineHeight: 1.65,
+                      whiteSpace: "pre-wrap",
+                      ...(m.role === "user"
+                        ? {
+                            background:
+                              "linear-gradient(135deg,#22d3ee,#a78bfa)",
+                            color: "#000",
+                            borderRadius: "14px 14px 3px 14px",
+                          }
+                        : {
+                            background: "#111827",
+                            color: "#e2e8f0",
+                            borderRadius: "14px 14px 14px 3px",
+                          }),
+                    }}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+              {chatLoad && (
+                <div style={{ display: "flex" }}>
+                  <div
+                    style={{
+                      background: "#111827",
+                      padding: "10px 14px",
+                      borderRadius: "14px 14px 14px 3px",
+                      display: "flex",
+                      gap: 4,
+                      alignItems: "center",
+                    }}
+                  >
+                    {[0, 1, 2].map((i) => (
+                      <span
+                        key={i}
+                        style={{
+                          width: 5,
+                          height: 5,
+                          borderRadius: "50%",
+                          background: "#64748b",
+                          display: "inline-block",
+                          animation: `cgB 1.4s ${i * 0.2}s infinite both`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div ref={endRef} />
+            </div>
+            <div
+              style={{
+                padding: "10px 12px",
+                borderTop: "1px solid rgba(255,255,255,.07)",
+                display: "flex",
+                gap: 8,
+              }}
+            >
+              <input
+                value={inp}
+                onChange={(e) => setInp(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && send()}
+                placeholder="Ask about your career path..."
+                style={{
+                  flex: 1,
+                  background: "#111827",
+                  border: "1px solid rgba(255,255,255,.07)",
+                  borderRadius: 9,
+                  padding: "10px 12px",
+                  color: "#e2e8f0",
+                  fontFamily: "'Outfit',sans-serif",
+                  fontSize: 13,
+                  outline: "none",
+                }}
+              />
+              <button
+                onClick={send}
+                disabled={!inp.trim() || chatLoad}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 9,
+                  background: "#22d3ee",
+                  border: "none",
+                  color: "#000",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "grid",
+                  placeItems: "center",
+                  opacity: !inp.trim() || chatLoad ? 0.38 : 1,
+                }}
+              >
+                ↑
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── style constants ── */
+const S = {
+  card: {
+    background: "#0c1120",
+    border: "1px solid rgba(255,255,255,.07)",
+    borderRadius: 16,
+    padding: 24,
+  },
+  cardTitle: {
+    fontFamily: "'Cabinet Grotesk',sans-serif",
+    fontWeight: 800,
+    fontSize: 22,
+    letterSpacing: "-.02em",
+    marginBottom: 6,
+  },
+  cardSub: {
+    color: "#64748b",
+    fontSize: 14,
+    marginBottom: 22,
+    lineHeight: 1.6,
+  },
+  label: {
+    fontFamily: "monospace",
+    fontSize: 10,
+    letterSpacing: ".08em",
+    color: "#64748b",
+    textTransform: "uppercase",
+    marginBottom: 7,
+    display: "block",
+  },
+  input: {
+    width: "100%",
+    background: "#111827",
+    border: "1px solid rgba(255,255,255,.07)",
+    borderRadius: 10,
+    padding: "12px 14px",
+    color: "#e2e8f0",
+    fontFamily: "'Outfit',sans-serif",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+  },
+  chipRow: { display: "flex", flexWrap: "wrap", gap: 7 },
+  chip: (on) => ({
+    padding: "7px 14px",
+    borderRadius: 999,
+    cursor: "pointer",
+    fontFamily: "'Outfit',sans-serif",
+    fontSize: 12,
+    transition: "all .13s",
+    border: `1px solid ${on ? "rgba(34,211,238,.6)" : "rgba(255,255,255,.07)"}`,
+    background: on ? "rgba(34,211,238,.1)" : "transparent",
+    color: on ? "#67e8f9" : "#64748b",
+  }),
+  btnPrimary: {
+    padding: "13px 26px",
+    background: "linear-gradient(135deg,#22d3ee,#a78bfa)",
+    border: "none",
+    borderRadius: 12,
+    color: "#000",
+    fontFamily: "'Cabinet Grotesk',sans-serif",
+    fontWeight: 800,
+    fontSize: 14,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+  },
+  btnGhost: {
+    padding: "12px 20px",
+    background: "transparent",
+    border: "1px solid rgba(255,255,255,.08)",
+    borderRadius: 10,
+    color: "#64748b",
+    fontFamily: "'Outfit',sans-serif",
+    fontSize: 13,
+    cursor: "pointer",
+  },
+  eyebrow: {
+    display: "inline-block",
+    fontFamily: "monospace",
+    fontSize: 10,
+    letterSpacing: ".12em",
+    color: "#22d3ee",
+    border: "1px solid rgba(34,211,238,.25)",
+    padding: "4px 12px",
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  pageTitle: {
+    fontFamily: "'Cabinet Grotesk',sans-serif",
+    fontWeight: 900,
+    fontSize: "clamp(22px,3.5vw,34px)",
+    letterSpacing: "-.025em",
+    marginBottom: 8,
+    lineHeight: 1.15,
+  },
+  pageSub: { color: "#64748b", fontSize: 14, lineHeight: 1.7 },
+  psHead: {
+    fontFamily: "monospace",
+    fontSize: 9,
+    letterSpacing: ".08em",
+    color: "#64748b",
+    textTransform: "uppercase",
+    marginBottom: 7,
+  },
+};
+
+/* ═══════════════════════════════════
+   ROOT — single default export
+   Drop this component directly into
+   your sidebar layout's content area.
+═══════════════════════════════════ */
+export default function CareerGuidanceApp() {
+  const [screen, setScreen] = useState("form");
+  const [student, setStudent] = useState(null);
+  const [matchData, setMatchData] = useState(null);
+  const [roadmap, setRoadmap] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loadMsg, setLoadMsg] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (formData) => {
+    setStudent(formData);
+    setLoading(true);
+    setLoadMsg("Running ML analysis...");
+    setError("");
+    try {
+      const res = await fetch("http://localhost:3000/api/career/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      console.log("API response:", data); // ← open DevTools Console to see raw response
+      if (!res.ok)
+        throw new Error(
+          data.message || data.error || `Server error ${res.status}`,
+        );
+
+      // Map FastAPI response → component expected shape
+      // FastAPI returns: { recommendations: [{ career, confidence }] }
+      // Component needs: { predictions: [{ career_cluster, confidence, match_strength }] }
+      const raw =
+        data.recommendations || data.predictions || data.results || [];
+
+      const normalizedPredictions = raw.map((p, i) => {
+        const conf = parseFloat(p.confidence || p.score || p.probability || 0);
+        return {
+          career_cluster:
+            p.career ||
+            p.career_cluster ||
+            p.cluster ||
+            p.label ||
+            `Career ${i + 1}`,
+          confidence: parseFloat(conf.toFixed(1)),
+          match_strength:
+            conf >= 55
+              ? "Excellent Match"
+              : conf >= 35
+                ? "Strong Match"
+                : conf >= 20
+                  ? "Good Match"
+                  : "Possible Match",
+        };
+      });
+
+      if (normalizedPredictions.length === 0) {
+        throw new Error("Model returned empty recommendations");
+      }
+
+      setMatchData({
+        predictions: normalizedPredictions,
+        key_factors: [], // your model doesn't return key_factors — hidden automatically
+        similar_students_count: data.similar_students_count || 200,
+      });
+      setScreen("matching");
+    } catch (e) {
+      setError(
+        e.message || "Failed to fetch — is your backend running on port 3000?",
+      );
+    }
+    setLoading(false);
+  };
+
+  const handleCareer = async (cluster) => {
+    setLoading(true);
+    setLoadMsg("Building your roadmap...");
+    setError("");
+    try {
+      const res = await fetch("http://localhost:3000/api/roadmap/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentProfile: student,
+          careerCluster: cluster,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(
+          data.message || data.error || `Server error ${res.status}`,
+        );
+      const rm = data.roadmap || data;
+      setRoadmap({
+        ...rm,
+        careerPaths: (rm.careerPaths || []).map((cp) => ({
+          ...cp,
+          salary_range: cp.salaryRange || cp.salary_range || cp.salary,
+        })),
+        entranceExams:
+          rm.entranceExams ||
+          (rm.exams || []).map((e) => ({
+            name: e.name,
+            forWhat: e.for || e.forWhat,
+            difficulty: e.difficulty,
+          })),
+        topColleges:
+          rm.topColleges ||
+          (rm.colleges || []).map((c) => ({
+            name: c.name,
+            location: c.location || c.loc,
+            program: c.program || c.prog,
+            ranking: c.ranking || c.rank,
+          })),
+        proTips: rm.proTips || rm.tips || [],
+        commonMistakes: rm.commonMistakes || rm.mistakes || [],
+      });
+      setScreen("roadmap");
+    } catch (e) {
+      setError(e.message || "Failed to generate roadmap.");
+    }
+    setLoading(false);
+  };
+
+  const reset = () => {
+    setScreen("form");
+    setStudent(null);
+    setMatchData(null);
+    setRoadmap(null);
+    setError("");
+  };
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Outfit:wght@300;400;500;600&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes cgB { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+      `}</style>
+
+      {/* ── Outer container: fills whatever space the sidebar layout gives it ── */}
+      <div
+        style={{
+          // width: "100%",
+          // height: "100%",
+          width: "100%",
+          height: "100%",
+          // overflowY: "auto",
+          // background: "#060910",
+          background: "linear-gradient(135deg,#0f172a,#060910)",
+          color: "#e2e8f0",
+          fontFamily: "'Outfit',sans-serif",
+          padding: "28px 20px",
+        }}
+      >
+        {/* Error */}
+        {error && (
+          <div
+            style={{
+              maxWidth: 740,
+              margin: "0 auto 16px",
+              background: "rgba(248,113,113,.08)",
+              border: "1px solid rgba(248,113,113,.2)",
+              borderRadius: 10,
+              padding: "12px 16px",
+              color: "#f87171",
+              fontSize: 13,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
+            ⚠️ {error}
+            <button
+              onClick={() => setError("")}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#f87171",
+                cursor: "pointer",
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Screens */}
+        {screen === "form" && (
+          <ProfileForm onSubmit={handleSubmit} loading={loading} />
+        )}
+        {screen === "matching" && matchData && (
+          <MatchResults
+            studentName={student?.name || "Student"}
+            matchData={matchData}
+            onSelectCareer={handleCareer}
+            loading={loading}
+          />
+        )}
+        {screen === "roadmap" && roadmap && (
+          <RoadmapView student={student} roadmap={roadmap} onReset={reset} />
+        )}
+
+        {/* Loading overlay */}
+        {loading && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(6,9,16,.82)",
+              zIndex: 9998,
+              display: "grid",
+              placeItems: "center",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 14,
+              }}
+            >
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: "50%",
+                  border: "2px solid rgba(255,255,255,.07)",
+                  borderTopColor: "#22d3ee",
+                  animation: "spin .7s linear infinite",
+                }}
+              />
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 12,
+                  color: "#64748b",
+                  letterSpacing: ".08em",
+                }}
+              >
+                {loadMsg}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </>
+  );
+}
+

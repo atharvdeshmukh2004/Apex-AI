@@ -27,7 +27,6 @@ const CardContent = [
     buttonText: "Yes,Open Chat Bot 💬",
     cancelText: "Cancel",
   },
-
 ];
 export default function DialogBox({ tool }) {
   return (
@@ -41,7 +40,6 @@ export default function DialogBox({ tool }) {
         if (
           (tool.button === "Generate Roadmap" && index === 0) ||
           (tool.button === "Open Chat Bot" && index === 1)
-         
         ) {
           return (
             <DialogContent className="sm:max-w-md" key={index}>
@@ -66,35 +64,9 @@ export default function DialogBox({ tool }) {
                 )}
               </DialogFooter>
             </DialogContent>
-          )
+          );
         }
       })}
     </Dialog>
   );
 }
-
-
-
-
-
-
-
-
-  // <DialogContent className="sm:max-w-md">
-  //       <DialogHeader>
-  //         <DialogTitle>Generate Your Roadmap?</DialogTitle>
-  //         <DialogDescription>
-  //           This will create a personalized learning roadmap based on your
-  //           skills and goals.Do you want to generate a roadmap.
-  //         </DialogDescription>
-  //       </DialogHeader>
-
-  //       <DialogFooter className="flex justify-end gap-3">
-  //         <Button variant="outline">Cancel</Button>
-  //         <Link to="/admin/roadmap">
-  //           <Button className="bg-gradient-to-r from-green-600 to-blue-500 text-white hover:opacity-90 transition">
-  //             Yes,Continue ✨
-  //           </Button>
-  //         </Link>
-  //       </DialogFooter>
-  //     </DialogContent>

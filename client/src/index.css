@@ -1,4 +1,7 @@
-@import "tailwindcss";
+
+
+
+/* @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -141,4 +144,149 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.439 0 0);
   }
+
+
+
+} */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --secondary: oklch(0.97 0 0);
+  --muted: oklch(0.97 0 0);
+  --border: oklch(0.922 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+}
+
+/* ================= BASE ================= */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /* 🔥 FIXED BACKGROUND (MAIN CHANGE) */
+  body {
+    @apply text-foreground;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+    overflow-x: hidden;
+  }
+}
+
+/* ================= PREMIUM UI ================= */
+
+/* ✨ HERO GLOW */
+.hero-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139,92,246,0.35), transparent);
+  filter: blur(80px);
+  z-index: 0;
+}
+
+/* 🌊 FLOAT ANIMATION */
+@keyframes floatSlow {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* ⚡ FLOAT FAST (CARDS) */
+@keyframes floatFast {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-fast {
+  animation: floatFast 3s ease-in-out infinite;
+}
+
+/* 💎 GLASS EFFECT */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* 🔥 CARD STYLE */
+.card-soft {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.card-soft:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+/* 🎯 BUTTON HOVER */
+.btn-premium {
+  transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* ✨ GRADIENT TEXT */
+.gradient-text {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 🔥 SCROLLBAR */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+  border-radius: 10px;
 }

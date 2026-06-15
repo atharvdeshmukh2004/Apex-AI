@@ -2,7 +2,7 @@ export const faqs = [
   {
     question: "What is the purpose of this app?",
     answer:
-      "This app helps you discover career paths that match your skills, interests, and goals. Using AI-based recommendations, it provides personalized guidance, learning resources, and insights into trending job roles.",
+      "This app helps you discover career paths that match your skills, interests, and goals. Using AI-based recommendations, it provides personalized guidance, learning resources, and job roles.",
   },
   {
     question: "How does the AI recommend careers?",

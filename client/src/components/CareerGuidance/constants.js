@@ -1,187 +1,302 @@
+// // constants.js — shared data, colours, style tokens
+
+// export const STREAMS = {
+//   10: ["Science", "Commerce", "Arts", "General"],
+//   12: ["Science (PCM)", "Science (PCB)", "Commerce", "Arts/Humanities"],
+//   UG: [
+//     "Engineering/Technology",
+//     "Medicine/Healthcare",
+//     "Commerce/BBA",
+//     "Arts/BA",
+//     "Science/BSc",
+//     "Law",
+//     "Design",
+//     "Other",
+//   ],
+//   PG: [
+//     "Engineering/MTech",
+//     "Management/MBA",
+//     "Medicine/MD",
+//     "Arts/MA",
+//     "Science/MSc",
+//     "Law/LLM",
+//     "Other",
+//   ],
+// };
+
+// export const INTERESTS = [
+//   { id: "technology", label: "Technology", emoji: "💻" },
+//   { id: "design", label: "Design", emoji: "🎨" },
+//   { id: "business", label: "Business", emoji: "📈" },
+//   { id: "healthcare", label: "Healthcare", emoji: "🏥" },
+//   { id: "finance", label: "Finance", emoji: "💰" },
+//   { id: "law", label: "Law", emoji: "⚖️" },
+//   { id: "education", label: "Teaching", emoji: "📖" },
+//   { id: "research", label: "Research", emoji: "🔬" },
+//   { id: "arts", label: "Arts", emoji: "🎭" },
+//   { id: "media", label: "Media", emoji: "📺" },
+//   { id: "sports", label: "Sports", emoji: "⚽" },
+//   { id: "environment", label: "Environment", emoji: "🌿" },
+//   { id: "social", label: "Social Work", emoji: "🤝" },
+//   { id: "government", label: "Government", emoji: "🏛️" },
+// ];
+
+// export const TECH_SKILLS = [
+//   { id: "coding", label: "Coding" },
+//   { id: "math", label: "Mathematics" },
+//   { id: "writing", label: "Writing" },
+//   { id: "drawing", label: "Drawing/Design" },
+//   { id: "speaking", label: "Public Speaking" },
+//   { id: "data", label: "Data Analysis" },
+//   { id: "pm", label: "Project Mgmt" },
+//   { id: "research", label: "Research" },
+//   { id: "teaching", label: "Teaching" },
+//   { id: "marketing", label: "Marketing" },
+// ];
+
+// export const CLUSTER_EMOJI = {
+//   "Software & Technology": "💻",
+//   "Data Science & AI": "🤖",
+//   "Design & Creative": "🎨",
+//   "Business & Management": "📈",
+//   "Healthcare & Medicine": "🏥",
+//   "Finance & Economics": "💰",
+//   "Law & Public Policy": "⚖️",
+//   "Education & Research": "📚",
+//   "Engineering & Manufacturing": "⚙️",
+//   "Media & Communication": "📡",
+//   "Entrepreneurship & Startups": "🚀",
+//   "Social Work & NGO": "🤝",
+//   "Government & Civil Services": "🏛️",
+//   "Arts & Humanities": "🎭",
+//   "Agriculture & Environment": "🌿",
+// };
+
+// export const PHASE_COLORS = [
+//   "#22d3ee",
+//   "#a78bfa",
+//   "#f472b6",
+//   "#fb923c",
+//   "#4ade80",
+// ];
+// export const ACCENT_COLORS = ["#22d3ee", "#a78bfa", "#f472b6"];
+
+// export const S = {
+//   card: {
+//     background: "#0c1120",
+//     border: "1px solid rgba(255,255,255,.07)",
+//     borderRadius: 16,
+//     padding: 24,
+//   },
+//   cardTitle: {
+//     fontFamily: "'Cabinet Grotesk',sans-serif",
+//     fontWeight: 800,
+//     fontSize: 22,
+//     letterSpacing: "-.02em",
+//     marginBottom: 6,
+//   },
+//   cardSub: {
+//     color: "#64748b",
+//     fontSize: 14,
+//     marginBottom: 22,
+//     lineHeight: 1.6,
+//   },
+//   label: {
+//     fontFamily: "monospace",
+//     fontSize: 10,
+//     letterSpacing: ".08em",
+//     color: "#64748b",
+//     textTransform: "uppercase",
+//     marginBottom: 7,
+//     display: "block",
+//   },
+//   input: {
+//     width: "100%",
+//     background: "#111827",
+//     border: "1px solid rgba(255,255,255,.07)",
+//     borderRadius: 10,
+//     padding: "12px 14px",
+//     color: "#e2e8f0",
+//     fontFamily: "'Outfit',sans-serif",
+//     fontSize: 14,
+//     outline: "none",
+//     boxSizing: "border-box",
+//   },
+//   chipRow: { display: "flex", flexWrap: "wrap", gap: 7 },
+//   chip: (on) => ({
+//     padding: "7px 14px",
+//     borderRadius: 999,
+//     cursor: "pointer",
+//     fontFamily: "'Outfit',sans-serif",
+//     fontSize: 12,
+//     transition: "all .13s",
+//     border: `1px solid ${on ? "rgba(34,211,238,.6)" : "rgba(255,255,255,.07)"}`,
+//     background: on ? "rgba(34,211,238,.1)" : "transparent",
+//     color: on ? "#67e8f9" : "#64748b",
+//   }),
+//   btnPrimary: {
+//     padding: "13px 26px",
+//     background: "linear-gradient(135deg,#22d3ee,#a78bfa)",
+//     border: "none",
+//     borderRadius: 12,
+//     color: "#000",
+//     fontFamily: "'Cabinet Grotesk',sans-serif",
+//     fontWeight: 800,
+//     fontSize: 14,
+//     cursor: "pointer",
+//     whiteSpace: "nowrap",
+//   },
+//   btnGhost: {
+//     padding: "12px 20px",
+//     background: "transparent",
+//     border: "1px solid rgba(255,255,255,.08)",
+//     borderRadius: 10,
+//     color: "#64748b",
+//     fontFamily: "'Outfit',sans-serif",
+//     fontSize: 13,
+//     cursor: "pointer",
+//   },
+//   eyebrow: {
+//     display: "inline-block",
+//     fontFamily: "monospace",
+//     fontSize: 10,
+//     letterSpacing: ".12em",
+//     color: "#22d3ee",
+//     border: "1px solid rgba(34,211,238,.25)",
+//     padding: "4px 12px",
+//     borderRadius: 20,
+//     marginBottom: 12,
+//   },
+//   pageTitle: {
+//     fontFamily: "'Cabinet Grotesk',sans-serif",
+//     fontWeight: 900,
+//     fontSize: "clamp(22px,3.5vw,34px)",
+//     letterSpacing: "-.025em",
+//     marginBottom: 8,
+//     lineHeight: 1.15,
+//   },
+//   pageSub: { color: "#64748b", fontSize: 14, lineHeight: 1.7 },
+//   psHead: {
+//     fontFamily: "monospace",
+//     fontSize: 9,
+//     letterSpacing: ".08em",
+//     color: "#64748b",
+//     textTransform: "uppercase",
+//     marginBottom: 7,
+//   },
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // constants.js — shared data, colours, style tokens
 
 export const STREAMS = {
-  10: ["Science", "Commerce", "Arts", "General"],
-  12: ["Science (PCM)", "Science (PCB)", "Commerce", "Arts/Humanities"],
-  UG: [
-    "Engineering/Technology",
-    "Medicine/Healthcare",
-    "Commerce/BBA",
-    "Arts/BA",
-    "Science/BSc",
-    "Law",
-    "Design",
-    "Other",
-  ],
-  PG: [
-    "Engineering/MTech",
-    "Management/MBA",
-    "Medicine/MD",
-    "Arts/MA",
-    "Science/MSc",
-    "Law/LLM",
-    "Other",
-  ],
+  10: ["Science","Commerce","Arts","General"],
+  12: ["Science (PCM)","Science (PCB)","Commerce","Arts/Humanities"],
+  UG: ["Engineering/Technology","Medicine/Healthcare","Commerce/BBA","Arts/BA","Science/BSc","Law","Design","Other"],
+  PG: ["Engineering/MTech","Management/MBA","Medicine/MD","Arts/MA","Science/MSc","Law/LLM","Other"],
 };
 
 export const INTERESTS = [
-  { id: "technology", label: "Technology", emoji: "💻" },
-  { id: "design", label: "Design", emoji: "🎨" },
-  { id: "business", label: "Business", emoji: "📈" },
-  { id: "healthcare", label: "Healthcare", emoji: "🏥" },
-  { id: "finance", label: "Finance", emoji: "💰" },
-  { id: "law", label: "Law", emoji: "⚖️" },
-  { id: "education", label: "Teaching", emoji: "📖" },
-  { id: "research", label: "Research", emoji: "🔬" },
-  { id: "arts", label: "Arts", emoji: "🎭" },
-  { id: "media", label: "Media", emoji: "📺" },
-  { id: "sports", label: "Sports", emoji: "⚽" },
-  { id: "environment", label: "Environment", emoji: "🌿" },
-  { id: "social", label: "Social Work", emoji: "🤝" },
-  { id: "government", label: "Government", emoji: "🏛️" },
+  { id:"technology",  label:"Technology",  emoji:"💻" },
+  { id:"design",      label:"Design",       emoji:"🎨" },
+  { id:"business",    label:"Business",     emoji:"📈" },
+  { id:"healthcare",  label:"Healthcare",   emoji:"🏥" },
+  { id:"finance",     label:"Finance",      emoji:"💰" },
+  { id:"law",         label:"Law",          emoji:"⚖️" },
+  { id:"education",   label:"Teaching",     emoji:"📖" },
+  { id:"research",    label:"Research",     emoji:"🔬" },
+  { id:"arts",        label:"Arts",         emoji:"🎭" },
+  { id:"media",       label:"Media",        emoji:"📺" },
+  { id:"sports",      label:"Sports",       emoji:"⚽" },
+  { id:"environment", label:"Environment",  emoji:"🌿" },
+  { id:"social",      label:"Social Work",  emoji:"🤝" },
+  { id:"government",  label:"Government",   emoji:"🏛️" },
 ];
 
 export const TECH_SKILLS = [
-  { id: "coding", label: "Coding" },
-  { id: "math", label: "Mathematics" },
-  { id: "writing", label: "Writing" },
-  { id: "drawing", label: "Drawing/Design" },
-  { id: "speaking", label: "Public Speaking" },
-  { id: "data", label: "Data Analysis" },
-  { id: "pm", label: "Project Mgmt" },
-  { id: "research", label: "Research" },
-  { id: "teaching", label: "Teaching" },
-  { id: "marketing", label: "Marketing" },
+  { id:"coding",    label:"Coding"          },
+  { id:"math",      label:"Mathematics"     },
+  { id:"writing",   label:"Writing"         },
+  { id:"drawing",   label:"Drawing/Design"  },
+  { id:"speaking",  label:"Public Speaking" },
+  { id:"data",      label:"Data Analysis"   },
+  { id:"pm",        label:"Project Mgmt"    },
+  { id:"research",  label:"Research"        },
+  { id:"teaching",  label:"Teaching"        },
+  { id:"marketing", label:"Marketing"       },
 ];
 
 export const CLUSTER_EMOJI = {
-  "Software & Technology": "💻",
-  "Data Science & AI": "🤖",
-  "Design & Creative": "🎨",
-  "Business & Management": "📈",
-  "Healthcare & Medicine": "🏥",
-  "Finance & Economics": "💰",
-  "Law & Public Policy": "⚖️",
-  "Education & Research": "📚",
+  "Software & Technology":       "💻",
+  "Data Science & AI":           "🤖",
+  "Design & Creative":           "🎨",
+  "Business & Management":       "📈",
+  "Healthcare & Medicine":       "🏥",
+  "Finance & Economics":         "💰",
+  "Law & Public Policy":         "⚖️",
+  "Education & Research":        "📚",
   "Engineering & Manufacturing": "⚙️",
-  "Media & Communication": "📡",
+  "Media & Communication":       "📡",
   "Entrepreneurship & Startups": "🚀",
-  "Social Work & NGO": "🤝",
+  "Social Work & NGO":           "🤝",
   "Government & Civil Services": "🏛️",
-  "Arts & Humanities": "🎭",
-  "Agriculture & Environment": "🌿",
+  "Arts & Humanities":           "🎭",
+  "Agriculture & Environment":   "🌿",
 };
 
-export const PHASE_COLORS = [
-  "#22d3ee",
-  "#a78bfa",
-  "#f472b6",
-  "#fb923c",
-  "#4ade80",
-];
-export const ACCENT_COLORS = ["#22d3ee", "#a78bfa", "#f472b6"];
+export const PHASE_COLORS  = ["#22d3ee","#a78bfa","#f472b6","#fb923c","#4ade80"];
+export const ACCENT_COLORS = ["#22d3ee","#a78bfa","#f472b6"];
 
 export const S = {
-  card: {
-    background: "#0c1120",
-    border: "1px solid rgba(255,255,255,.07)",
-    borderRadius: 16,
-    padding: 24,
-  },
-  cardTitle: {
-    fontFamily: "'Cabinet Grotesk',sans-serif",
-    fontWeight: 800,
-    fontSize: 22,
-    letterSpacing: "-.02em",
-    marginBottom: 6,
-  },
-  cardSub: {
-    color: "#64748b",
-    fontSize: 14,
-    marginBottom: 22,
-    lineHeight: 1.6,
-  },
-  label: {
-    fontFamily: "monospace",
-    fontSize: 10,
-    letterSpacing: ".08em",
-    color: "#64748b",
-    textTransform: "uppercase",
-    marginBottom: 7,
-    display: "block",
-  },
-  input: {
-    width: "100%",
-    background: "#111827",
-    border: "1px solid rgba(255,255,255,.07)",
-    borderRadius: 10,
-    padding: "12px 14px",
-    color: "#e2e8f0",
-    fontFamily: "'Outfit',sans-serif",
-    fontSize: 14,
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  chipRow: { display: "flex", flexWrap: "wrap", gap: 7 },
-  chip: (on) => ({
-    padding: "7px 14px",
-    borderRadius: 999,
-    cursor: "pointer",
-    fontFamily: "'Outfit',sans-serif",
-    fontSize: 12,
-    transition: "all .13s",
-    border: `1px solid ${on ? "rgba(34,211,238,.6)" : "rgba(255,255,255,.07)"}`,
-    background: on ? "rgba(34,211,238,.1)" : "transparent",
-    color: on ? "#67e8f9" : "#64748b",
-  }),
-  btnPrimary: {
-    padding: "13px 26px",
-    background: "linear-gradient(135deg,#22d3ee,#a78bfa)",
-    border: "none",
-    borderRadius: 12,
-    color: "#000",
-    fontFamily: "'Cabinet Grotesk',sans-serif",
-    fontWeight: 800,
-    fontSize: 14,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-  btnGhost: {
-    padding: "12px 20px",
-    background: "transparent",
-    border: "1px solid rgba(255,255,255,.08)",
-    borderRadius: 10,
-    color: "#64748b",
-    fontFamily: "'Outfit',sans-serif",
-    fontSize: 13,
-    cursor: "pointer",
-  },
-  eyebrow: {
-    display: "inline-block",
-    fontFamily: "monospace",
-    fontSize: 10,
-    letterSpacing: ".12em",
-    color: "#22d3ee",
-    border: "1px solid rgba(34,211,238,.25)",
-    padding: "4px 12px",
-    borderRadius: 20,
-    marginBottom: 12,
-  },
-  pageTitle: {
-    fontFamily: "'Cabinet Grotesk',sans-serif",
-    fontWeight: 900,
-    fontSize: "clamp(22px,3.5vw,34px)",
-    letterSpacing: "-.025em",
-    marginBottom: 8,
-    lineHeight: 1.15,
-  },
-  pageSub: { color: "#64748b", fontSize: 14, lineHeight: 1.7 },
-  psHead: {
-    fontFamily: "monospace",
-    fontSize: 9,
-    letterSpacing: ".08em",
-    color: "#64748b",
-    textTransform: "uppercase",
-    marginBottom: 7,
-  },
+  card:      { background:"#0c1120", border:"1px solid rgba(255,255,255,.07)", borderRadius:16, padding:24 },
+  cardTitle: { fontFamily:"'Cabinet Grotesk',sans-serif", fontWeight:800, fontSize:22, letterSpacing:"-.02em", marginBottom:6 },
+  cardSub:   { color:"#64748b", fontSize:14, marginBottom:22, lineHeight:1.6 },
+  label:     { fontFamily:"monospace", fontSize:10, letterSpacing:".08em", color:"#64748b", textTransform:"uppercase", marginBottom:7, display:"block" },
+  input:     { width:"100%", background:"#111827", border:"1px solid rgba(255,255,255,.07)", borderRadius:10, padding:"12px 14px", color:"#e2e8f0", fontFamily:"'Outfit',sans-serif", fontSize:14, outline:"none", boxSizing:"border-box" },
+  chipRow:   { display:"flex", flexWrap:"wrap", gap:7 },
+  chip:      on => ({ padding:"7px 14px", borderRadius:999, cursor:"pointer", fontFamily:"'Outfit',sans-serif", fontSize:12, transition:"all .13s", border:`1px solid ${on?"rgba(34,211,238,.6)":"rgba(255,255,255,.07)"}`, background:on?"rgba(34,211,238,.1)":"transparent", color:on?"#67e8f9":"#64748b" }),
+  btnPrimary:{ padding:"13px 26px", background:"linear-gradient(135deg,#22d3ee,#a78bfa)", border:"none", borderRadius:12, color:"#000", fontFamily:"'Cabinet Grotesk',sans-serif", fontWeight:800, fontSize:14, cursor:"pointer", whiteSpace:"nowrap" },
+  btnGhost:  { padding:"12px 20px", background:"transparent", border:"1px solid rgba(255,255,255,.08)", borderRadius:10, color:"#64748b", fontFamily:"'Outfit',sans-serif", fontSize:13, cursor:"pointer" },
+  eyebrow:   { display:"inline-block", fontFamily:"monospace", fontSize:10, letterSpacing:".12em", color:"#22d3ee", border:"1px solid rgba(34,211,238,.25)", padding:"4px 12px", borderRadius:20, marginBottom:12 },
+  pageTitle: { fontFamily:"'Cabinet Grotesk',sans-serif", fontWeight:900, fontSize:"clamp(22px,3.5vw,34px)", letterSpacing:"-.025em", marginBottom:8, lineHeight:1.15 },
+  pageSub:   { color:"#64748b", fontSize:14, lineHeight:1.7 },
+  psHead:    { fontFamily:"monospace", fontSize:9, letterSpacing:".08em", color:"#64748b", textTransform:"uppercase", marginBottom:7 },
 };

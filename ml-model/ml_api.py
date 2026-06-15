@@ -1,68 +1,3 @@
-# from fastapi import FastAPI
-# from fastapi.middleware.cors import CORSMiddleware
-# import pandas as pd
-# import joblib
-
-# app = FastAPI()
-
-# # Enable CORS (important for React frontend)
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# # Load ML model and encoders
-# model = joblib.load("career_model.pkl")
-# encoders = joblib.load("encoders.pkl")
-
-
-# @app.get("/")
-# def home():
-#     return {"message": "Career Guidance ML API is running"}
-
-
-# @app.post("/predict")
-# def predict(data: dict):
-
-#     try:
-#         # Convert input data to dataframe
-#         df = pd.DataFrame([data])
-
-#         # Encode categorical columns
-#         for col in df.columns:
-#             if col in encoders:
-#                 df[col] = encoders[col].transform(df[col])
-
-#         # Get prediction probabilities
-#         probabilities = model.predict_proba(df)[0]
-
-#         # Get career labels
-#         careers = model.classes_
-
-#         # Combine careers with probabilities
-#         results = []
-#         for career, prob in zip(careers, probabilities):
-#             results.append({
-#                 "career": career,
-#                 "confidence": round(prob * 100, 2)
-#             })
-
-#         # Sort by highest confidence
-#         results = sorted(results, key=lambda x: x["confidence"], reverse=True)
-
-#         # Return top 3 recommendations
-#         return {
-#             "recommendations": results[:3]
-#         }
-
-#     except Exception as e:
-#         return {
-#             "error": str(e)
-#         }
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -155,8 +90,30 @@ def predict(data: dict):
         )
 
         return {"recommendations": results[:3]}
+        
+        
 
     except Exception as e:
         import traceback
         traceback.print_exc()
         return {"error": str(e)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

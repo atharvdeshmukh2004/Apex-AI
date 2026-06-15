@@ -241,7 +241,7 @@ export default function AcademicChat() {
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-                  //   background: "#f7fafc",
+          //   background: "#f7fafc",
           background: "#fefefe",
         }}
       >

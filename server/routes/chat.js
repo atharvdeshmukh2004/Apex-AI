@@ -1,15 +1,10 @@
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import rateLimit from "express-rate-limit";
+// import rateLimit from "express-rate-limit";
 
 const router = express.Router();
 
-// Rate limiter
-const chatLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 30,
-  message: { error: "Too many messages. Please slow down." },
-});
+
 
 // Gemini setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -22,7 +17,7 @@ If not related, respond with:
 Keep answers short and helpful.`;
 
 // Route
-router.post("/chat", chatLimiter, async (req, res) => {
+router.post("/chat", async (req, res) => {
   try {
     const { message, history = [] } = req.body;
 

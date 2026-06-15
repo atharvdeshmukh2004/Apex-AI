@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { STREAMS, INTERESTS, TECH_SKILLS, S } from "./constants";
 
-
-
 /* ═══════════════════════════════════
    SCREEN 1 – PROFILE FORM
 ═══════════════════════════════════ */
@@ -472,3 +470,5 @@ export function ProfileForm({ onSubmit, loading }) {
     </div>
   );
 }
+
+export default ProfileForm;

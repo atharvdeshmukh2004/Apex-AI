@@ -1,14 +1,14 @@
-// MatchResults.jsx
 import { useState } from "react";
 import { CLUSTER_EMOJI, ACCENT_COLORS, S } from "./constants";
 import { AnimBar } from "./SharedComponents";
-
+import { useNavigate } from "react-router-dom";
+import ProfileForm from "./ProfileForm";
 /* ═══════════════════════════════════
    SCREEN 2 – MATCH RESULTS
 ═══════════════════════════════════ */
-export function MatchResults({ studentName, matchData, onSelectCareer, loading }) {
+function MatchResults({ studentName, matchData, onSelectCareer, loading }) {
   const [selected, setSelected] = useState(null);
-
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -178,13 +178,38 @@ export function MatchResults({ studentName, matchData, onSelectCareer, loading }
             ? `Generate Roadmap for "${selected}" →`
             : "Select a career above"}
       </button>
+      <button
+        onClick={() => (window.location.href = "/admin/users")}
+        className="
+        mt-4
+    flex-1
+    px-5
+    py-3
+    rounded-2xl
+    bg-gradient-to-r
+    from-cyan-500/20
+    to-blue-500/20
+    border
+    border-cyan-400/30
+    text-cyan-300
+    font-semibold
+    text-sm
+    backdrop-blur-md
+    shadow-lg
+    hover:scale-[1.02]
+    hover:from-cyan-500/30
+    hover:to-blue-500/30
+    hover:border-cyan-300/50
+    hover:text-white
+    active:scale-[0.98]
+    transition-all
+    duration-300
+  "
+      >
+        ↺ Start Over
+      </button>
     </div>
   );
 }
 
-/* ═══════════════════════════════════
-   SCREEN 3 – ROADMAP
-═══════════════════════════════════ */
-     
-        
-   
+export default MatchResults;

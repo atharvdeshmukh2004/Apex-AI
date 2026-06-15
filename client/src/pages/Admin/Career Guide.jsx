@@ -1,10 +1,8 @@
-
-
 // CareerGuidanceApp.jsx — root component, drop into your sidebar content area
 import { useState } from "react";
-import {ProfileForm}  from "../../components/CareerGuidance/ProfileForm";
-import {MatchResults} from "../../components/CareerGuidance/MatchResults";
-import {RoadmapView}  from "../../components/CareerGuidance/RoadmapView";
+import ProfileForm from "../../components/CareerGuidance/ProfileForm";
+import MatchResults from "../../components/CareerGuidance/MatchResults";
+import RoadmapView from "../../components/CareerGuidance/RoadmapView";
 
 export default function CareerGuidanceApp() {
   const [screen, setScreen] = useState("form");
@@ -33,9 +31,6 @@ export default function CareerGuidanceApp() {
           data.message || data.error || `Server error ${res.status}`,
         );
 
-      // Map FastAPI response → component expected shape
-      // FastAPI returns: { recommendations: [{ career, confidence }] }
-      // Component needs: { predictions: [{ career_cluster, confidence, match_strength }] }
       const raw =
         data.recommendations || data.predictions || data.results || [];
 
@@ -151,8 +146,8 @@ export default function CareerGuidanceApp() {
           // height: "100%",
           width: "100%",
           height: "100%",
-          // overflowY: "auto",
-          // background: "#060910",
+          overflowY: "auto",
+          background: "#060910",
           background: "linear-gradient(135deg,#0f172a,#060910)",
           color: "#e2e8f0",
           fontFamily: "'Outfit',sans-serif",

@@ -17,7 +17,7 @@ function Navbar() {
           <h1 className='inline-block text-2xl font-bold ml-1'>Apex Ai</h1>
         </Link>
         <button onClick={()=>navigate("/Login")}
-          className="bg-gradient-to-t from-pink-500 to-orange-400 text-white px-4 py-2 rounded-4xl cursor-pointer">
+          className="bg-gradient-to-t from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-4xl cursor-pointer">
           Login <LuArrowRight className="inline-block ml-2" />
         </button>
       </div>

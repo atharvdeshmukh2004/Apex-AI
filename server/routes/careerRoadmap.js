@@ -1,16 +1,4 @@
-/**
- * routes/careerRoadmap.js
- * Mounted at: /api/roadmap  (in server.js)
- *
- * POST /api/roadmap/generate
- *   Body: { studentProfile, careerCluster }
- *   Returns: { roadmap }
- *
- * Requires in your .env:
- *   GEMINI_API_KEY=your-google-api-key
- *
- * Install: npm install @google/generative-ai
- */
+
 
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
